@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-linen-100 text-ink-700 dark:bg-ink-900 dark:text-linen-100 transition-colors duration-200;
+    font-feature-settings: "tnum" 1;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+
+  /* Foco de teclado visible y consistente en toda la app */
+  :focus-visible {
+    outline: 2px solid theme("colors.brass.500");
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background-color: theme("colors.brass.200");
+  }
+}
+
+@layer components {
+  .kpi-figure {
+    @apply font-mono tabular-nums;
+  }
+
+  .panel {
+    @apply bg-white dark:bg-ink-800 border border-ink-100/70 dark:border-ink-700 shadow-panel rounded-lg;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-ink-200 dark:bg-ink-600 rounded-full;
+  }
+}

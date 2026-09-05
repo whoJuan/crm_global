@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const prisma = require("../config/prisma");
-const asyncHandler = require("../utils/asyncHandler");
+const prisma = require("../config/prisma.js");
+const asyncHandler = require("../utils/asyncHandler.js");
 const ApiError = require("../utils/ApiError");
 const SALT_ROUNDS = 10;
 const signToken = (user) =>
@@ -13,7 +13,6 @@ const sanitizeUser = (user) => {
   const { passwordHash, ...rest } = user;
   return rest;
 };
-
 const register = asyncHandler(async (req, res) => {
   const { name, email, password, role } = req.body;
 

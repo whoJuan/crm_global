@@ -2,8 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const path = require("path");
-const apiRoutes = require("./routes");
-const { errorHandler, notFound } = require("./middleware/error.middleware");
+const apiRoutes = require("./src/routes/index");
+const { errorHandler, notFound } = require("./src/middleware/error.middleware");
 const app = express();
 
 app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") || "*" }));
