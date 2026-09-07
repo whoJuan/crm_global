@@ -9,16 +9,54 @@ datasource db {
 
 enum Role {
   ADMIN
+  DESIGNER
+  WORKSHOP_LEAD
   EMPLOYEE
 }
 
 enum OrderStatus {
-  PENDING // Pendiente
-  CONFIRMED // Confirmado
-  IN_PRODUCTION // En producción / preparación
-  SHIPPED // Enviado
-  DELIVERED // Entregado
-  CANCELLED // Cancelado
+  PENDING        // Pendiente de confirmación
+  CONFIRMED      // Confirmado / Anticipo recibido
+  IN_PRODUCTION  // En taller / ebanistería
+  QUALITY_CHECK  // En control de calidad
+  SHIPPED        // En despacho / transporte
+  DELIVERED      // Entregado e instalado
+  CANCELLED      // Cancelado
+}
+
+enum LeadStatus {
+  NUEVO
+  CONTACTADO
+  CITA_SHOWROOM
+  COTIZACION_ENVIADA
+  NEGOCIACION
+  GANADO
+  PERDIDO
+}
+
+enum LeadSource {
+  INSTAGRAM
+  SHOWROOM_DIRECTO
+  ARQUITECTO_DISENADOR
+  SITIO_WEB
+  REFERIDO
+  EVENTO_DISENO
+}
+
+enum PaymentMethod {
+  TRANSFERENCIA_BANCARIA
+  TARJETA_CREDITO
+  EFECTIVO
+  LINK_PAGO
+  CHEQUE
+}
+
+enum QuoteStatus {
+  BORRADOR
+  ENVIADA
+  APROBADA
+  RECHAZADA
+  EXPIRADA
 }
 
 model User {
@@ -32,7 +70,9 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  ordersCreated Order[] @relation("OrderCreatedBy")
+  ordersCreated Order[]    @relation("OrderCreatedBy")
+  leadsAssigned Lead[]     @relation("LeadAssignedTo")
+  activities    Activity[]
 
   @@map("users")
 }
@@ -45,20 +85,50 @@ model Customer {
   address      String?
   city         String?
   documentId   String?  @map("document_id")
+  isVip        Boolean  @default(false) @map("is_vip")
+  clientType   String   @default("PARTICULAR") @map("client_type") // PARTICULAR, ESTUDIO_ARQUITECTURA, HOTEL_RESTAURANTE
   notes        String?
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  orders Order[]
+  orders     Order[]
+  quotes     Quote[]
+  activities Activity[]
 
   @@map("customers")
 }
 
+model Lead {
+  id              Int        @id @default(autoincrement())
+  name            String
+  email           String?
+  phone           String
+  company         String?
+  source          LeadSource @default(SHOWROOM_DIRECTO)
+  status          LeadStatus @default(NUEVO)
+  estimatedBudget Decimal?   @map("estimated_budget") @db.Decimal(12, 2)
+  interestSummary String?    @map("interest_summary")
+  notes           String?
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  assignedToId Int?  @map("assigned_to_id")
+  assignedTo   User? @relation("LeadAssignedTo", fields: [assignedToId], references: [id])
+
+  quotes     Quote[]
+  activities Activity[]
+
+  @@map("leads")
+  @@index([status])
+  @@index([source])
+}
+
 model Category {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  collection  String?  @default("Colección Permanente")
   description String?
-  createdAt   DateTime  @default(now()) @map("created_at")
+  createdAt   DateTime @default(now()) @map("created_at")
 
   products Product[]
 
@@ -69,12 +139,16 @@ model Product {
   id           Int      @id @default(autoincrement())
   sku          String   @unique
   name         String
+  collection   String?  @default("Atelier 2026")
   description  String?
+  materials    String?  // Ej: Roble macizo, Lino belga, Mármol carrara
+  dimensions   String?  // Ej: 240 x 95 x 85 cm
   imageUrl     String?  @map("image_url")
   price        Decimal  @db.Decimal(12, 2)
   cost         Decimal? @db.Decimal(12, 2)
   stock        Int      @default(0)
-  minStock     Int      @default(5) @map("min_stock")
+  minStock     Int      @default(3) @map("min_stock")
+  inShowroom   Boolean  @default(true) @map("in_showroom")
   isActive     Boolean  @default(true) @map("is_active")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
@@ -88,6 +162,31 @@ model Product {
   @@index([categoryId])
 }
 
+model Quote {
+  id           Int         @id @default(autoincrement())
+  quoteNumber  String      @unique @map("quote_number")
+  status       QuoteStatus @default(BORRADOR)
+  subtotal     Decimal     @db.Decimal(12, 2)
+  discount     Decimal     @default(0) @db.Decimal(12, 2)
+  total        Decimal     @db.Decimal(12, 2)
+  validUntil   DateTime    @map("valid_until")
+  notes        String?
+  itemsJson    Json        @map("items_json") // Lista de piezas, telas, acabados seleccionados
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  leadId Int?  @map("lead_id")
+  lead   Lead? @relation(fields: [leadId], references: [id])
+
+  customerId Int?      @map("customer_id")
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  orderId Int?   @unique @map("order_id")
+  order   Order? @relation(fields: [orderId], references: [id])
+
+  @@map("quotes")
+}
+
 model Order {
   id           Int         @id @default(autoincrement())
   orderNumber  String      @unique @map("order_number")
@@ -95,7 +194,10 @@ model Order {
   subtotal     Decimal     @db.Decimal(12, 2)
   discount     Decimal     @default(0) @db.Decimal(12, 2)
   total        Decimal     @db.Decimal(12, 2)
+  paidAmount   Decimal     @default(0) @map("paid_amount") @db.Decimal(12, 2)
   notes        String?
+  workshopStage String?    @default("Estructura de Madera") @map("workshop_stage")
+  craftsmanName String?    @map("craftsman_name")
   deliveryDate DateTime?   @map("delivery_date")
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
@@ -106,7 +208,9 @@ model Order {
   createdById Int  @map("created_by_id")
   createdBy   User @relation("OrderCreatedBy", fields: [createdById], references: [id])
 
+  quote   Quote?
   details OrderDetail[]
+  payments Payment[]
 
   @@map("orders")
   @@index([customerId])
@@ -115,10 +219,11 @@ model Order {
 }
 
 model OrderDetail {
-  id         Int     @id @default(autoincrement())
-  quantity   Int
-  unitPrice  Decimal @db.Decimal(12, 2) @map("unit_price")
-  lineTotal  Decimal @db.Decimal(12, 2) @map("line_total")
+  id           Int     @id @default(autoincrement())
+  quantity     Int
+  unitPrice    Decimal @db.Decimal(12, 2) @map("unit_price")
+  lineTotal    Decimal @db.Decimal(12, 2) @map("line_total")
+  finishNotes  String? @map("finish_notes") // Ej: "Tela Lino Crudo, Patas Roble Ahumado"
 
   orderId   Int     @map("order_id")
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -129,4 +234,39 @@ model OrderDetail {
   @@map("order_details")
   @@index([orderId])
   @@index([productId])
+}
+
+model Payment {
+  id          Int           @id @default(autoincrement())
+  amount      Decimal       @db.Decimal(12, 2)
+  method      PaymentMethod @default(TRANSFERENCIA_BANCARIA)
+  reference   String?
+  notes       String?
+  paymentDate DateTime      @default(now()) @map("payment_date")
+
+  orderId Int   @map("order_id")
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+  @@index([orderId])
+}
+
+model Activity {
+  id          Int      @id @default(autoincrement())
+  type        String   // LLAMADA, WHATSAPP, CITA_SHOWROOM, NOTA
+  title       String
+  description String?
+  scheduledAt DateTime? @map("scheduled_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  userId Int  @map("user_id")
+  user   User @relation(fields: [userId], references: [id])
+
+  leadId Int?  @map("lead_id")
+  lead   Lead? @relation(fields: [leadId], references: [id])
+
+  customerId Int?      @map("customer_id")
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  @@map("activities")
 }

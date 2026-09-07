@@ -1,20 +1,28 @@
 const { Router } = require("express");
-const authRoutes=require("./auth.routes");
-const userRoutes=require("./user.routes");
-const customerRoutes=require("./customer.routes");
-const categoryRoutes=require("./category.routes");
-const productRoutes=require("./product.routes");
-const orderRoutes=require("./order.routes");
-const dashboardRoutes=require("./dashboard.routes");
-const reportRoutes=require("./report.routes");
-const router=Router();
+const authRoutes = require("./auth.routes");
+const userRoutes = require("./user.routes");
+const customerRoutes = require("./customer.routes");
+const categoryRoutes = require("./category.routes");
+const productRoutes = require("./product.routes");
+const orderRoutes = require("./order.routes");
+const leadRoutes = require("./lead.routes");
+const quoteRoutes = require("./quote.routes");
+const paymentRoutes = require("./payment.routes");
+const dashboardRoutes = require("./dashboard.routes");
+const reportRoutes = require("./report.routes");
 
-router.use("/auth",authRoutes);
-router.use("/users",userRoutes);
-router.use("/customers",customerRoutes);
-router.use("/categories",categoryRoutes);
-router.use("/products",productRoutes);
-router.use("/orders",orderRoutes);
-router.use("/dashboard",dashboardRoutes);
-router.use("/reports",reportRoutes);
-module.exports=router;
+const router = Router();
+
+router.use("/auth", authRoutes);
+router.use("/users", userRoutes);
+router.use("/customers", customerRoutes);
+router.use("/categories", categoryRoutes);
+router.use("/products", productRoutes);
+router.use("/orders", orderRoutes);
+router.use("/leads", leadRoutes);
+router.use("/quotes", quoteRoutes);
+router.use("/payments", paymentRoutes);
+router.use("/dashboard", dashboardRoutes);
+router.use("/reports", reportRoutes);
+
+module.exports = router;

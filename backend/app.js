@@ -2,9 +2,17 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const path = require("path");
+const fs = require("fs");
 const apiRoutes = require("./src/routes/index");
 const { errorHandler, notFound } = require("./src/middleware/error.middleware");
+
 const app = express();
+
+// Asegurar directorio de uploads
+const uploadsDir = path.join(__dirname, "uploads", "products");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") || "*" }));
 app.use(express.json());
@@ -15,12 +23,18 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 // Archivos estáticos
-app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.get("/api/health", (req, res) => {
-  res.json({ success: true, message: "API del CRM de muebles operativa" });
+  res.json({
+    success: true,
+    message: "Robledo Atelier CRM API v2 operativa",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.use("/api", apiRoutes);
 app.use(notFound);
 app.use(errorHandler);
+
 module.exports = app;

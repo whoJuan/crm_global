@@ -7,23 +7,28 @@ const orderInclude = {
   customer: true,
   createdBy: { select: { id: true, name: true, email: true } },
   details: { include: { product: true } },
+  payments: { orderBy: { paymentDate: "desc" } },
 };
 
 const getOrders = asyncHandler(async (req, res) => {
-  const { search = "", status, page = 1, limit = 10 } = req.query;
+  const { search = "", status, workshopStage, customerId, page = 1, limit = 15 } = req.query;
   const skip = (Number(page) - 1) * Number(limit);
+  const take = Number(limit);
 
   const where = {
     AND: [
       status ? { status } : {},
+      workshopStage ? { workshopStage } : {},
+      customerId ? { customerId: Number(customerId) } : {},
       search
         ? {
             OR: [
               { orderNumber: { contains: search, mode: "insensitive" } },
               { customer: { name: { contains: search, mode: "insensitive" } } },
+              { craftsmanName: { contains: search, mode: "insensitive" } },
             ],
           }
-        :{},
+        : {},
     ],
   };
 
@@ -33,7 +38,7 @@ const getOrders = asyncHandler(async (req, res) => {
       include: orderInclude,
       orderBy: { createdAt: "desc" },
       skip,
-      take: Number(limit),
+      take,
     }),
     prisma.order.count({ where }),
   ]);
@@ -41,7 +46,7 @@ const getOrders = asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: orders,
-    pagination: { total, page: Number(page), limit: Number(limit), pages: Math.ceil(total / limit) },
+    pagination: { total, page: Number(page), limit: take, pages: Math.ceil(total / take) },
   });
 });
 
@@ -55,7 +60,7 @@ const getOrderById = asyncHandler(async (req, res) => {
 });
 
 const createOrder = asyncHandler(async (req, res) => {
-  const { customerId, discount = 0, notes, deliveryDate, items } = req.body;
+  const { customerId, discount = 0, notes, deliveryDate, items, workshopStage, craftsmanName, initialDeposit = 0, paymentMethod } = req.body;
 
   if (!Array.isArray(items) || items.length === 0) {
     throw new ApiError(400, "El pedido debe incluir al menos un producto");
@@ -80,6 +85,7 @@ const createOrder = asyncHandler(async (req, res) => {
         quantity: item.quantity,
         unitPrice: product.price,
         lineTotal,
+        finishNotes: item.finishNotes || null,
       });
 
       await tx.product.update({
@@ -89,8 +95,9 @@ const createOrder = asyncHandler(async (req, res) => {
     }
 
     const total = subtotal - Number(discount);
+    const depositNum = Number(initialDeposit) || 0;
 
-    return tx.order.create({
+    const createdOrder = await tx.order.create({
       data: {
         orderNumber: generateOrderNumber(),
         customerId: Number(customerId),
@@ -98,12 +105,29 @@ const createOrder = asyncHandler(async (req, res) => {
         subtotal,
         discount: Number(discount),
         total,
+        paidAmount: depositNum,
+        status: depositNum > 0 ? "CONFIRMED" : "PENDING",
+        workshopStage: workshopStage || "Estructura de Madera",
+        craftsmanName: craftsmanName || null,
         notes,
         deliveryDate: deliveryDate ? new Date(deliveryDate) : null,
         details: { create: detailsData },
       },
       include: orderInclude,
     });
+
+    if (depositNum > 0) {
+      await tx.payment.create({
+        data: {
+          orderId: createdOrder.id,
+          amount: depositNum,
+          method: paymentMethod || "TRANSFERENCIA_BANCARIA",
+          notes: "Anticipo inicial para inicio de fabricación",
+        },
+      });
+    }
+
+    return createdOrder;
   });
 
   res.status(201).json({ success: true, data: order });
@@ -111,7 +135,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
 const updateOrder = asyncHandler(async (req, res) => {
   const id = Number(req.params.id);
-  const { customerId, discount, notes, deliveryDate } = req.body;
+  const { customerId, discount, notes, deliveryDate, workshopStage, craftsmanName } = req.body;
 
   const existing = await prisma.order.findUnique({ where: { id } });
   if (!existing) throw new ApiError(404, "Pedido no encontrado");
@@ -126,6 +150,8 @@ const updateOrder = asyncHandler(async (req, res) => {
       discount: newDiscount,
       total,
       notes,
+      workshopStage,
+      craftsmanName,
       deliveryDate: deliveryDate ? new Date(deliveryDate) : undefined,
     },
     include: orderInclude,
@@ -136,10 +162,10 @@ const updateOrder = asyncHandler(async (req, res) => {
 
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const id = Number(req.params.id);
-  const { status } = req.body;
+  const { status, workshopStage } = req.body;
 
-  const validStatuses = ["PENDING", "CONFIRMED", "IN_PRODUCTION", "SHIPPED", "DELIVERED", "CANCELLED"];
-  if (!validStatuses.includes(status)) {
+  const validStatuses = ["PENDING", "CONFIRMED", "IN_PRODUCTION", "QUALITY_CHECK", "SHIPPED", "DELIVERED", "CANCELLED"];
+  if (status && !validStatuses.includes(status)) {
     throw new ApiError(400, "Estado de pedido no válido");
   }
 
@@ -154,10 +180,19 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
           data: { stock: { increment: detail.quantity } },
         });
       }
-      await tx.order.update({ where: { id }, data: { status } });
+      await tx.order.update({
+        where: { id },
+        data: { status, workshopStage: "Cancelado" },
+      });
     });
   } else {
-    await prisma.order.update({ where: { id }, data: { status } });
+    await prisma.order.update({
+      where: { id },
+      data: {
+        status: status || undefined,
+        workshopStage: workshopStage || undefined,
+      },
+    });
   }
 
   const order = await prisma.order.findUnique({ where: { id }, include: orderInclude });

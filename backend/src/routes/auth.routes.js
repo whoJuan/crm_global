@@ -1,20 +1,13 @@
-const{Router}=require("express");
-const {body}=require("express-validator");
-const{register,login,me}=require("../controllers/auth.controller");
-const validate=require("../middleware/validate.middleware");
-const{authenticate}=require("../middleware/auth.middleware");
+const { Router } = require("express");
+const { body } = require("express-validator");
+const { login, me } = require("../controllers/auth.controller");
+const validate = require("../middleware/validate.middleware");
+const { authenticate } = require("../middleware/auth.middleware");
+
 const router = Router();
 
-router.post(
-  "/register",
-  [
-    body("name").trim().notEmpty().withMessage("El nombre es obligatorio"),
-    body("email").isEmail().withMessage("Correo no válido"),
-    body("password").isLength({ min: 6 }).withMessage("La contraseña debe tener al menos 6 caracteres"),
-  ],
-  validate,
-  register
-);
+// El software es privado: el registro público está deshabilitado.
+// La creación de usuarios se gestiona exclusivamente por administradores en /api/users
 
 router.post(
   "/login",
@@ -25,5 +18,7 @@ router.post(
   validate,
   login
 );
+
 router.get("/me", authenticate, me);
+
 module.exports = router;
