@@ -1,23 +1,21 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import ProtectedRoute from "@/routes/ProtectedRoute";
-import MainLayout from "@/layouts/MainLayout";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import Dashboard from "@/pages/Dashboard";
-import Orders from "@/pages/Orders";
-import OrderDetail from "@/pages/OrderDetail";
-import Inventory from "@/pages/Inventory";
-import Customers from "@/pages/Customers";
-import CustomerDetail from "@/pages/CustomerDetail";
-import Reports from "@/pages/Reports";
-import Users from "@/pages/Users";
-import NotFound from "@/pages/NotFound";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import MainLayout from "./layouts/MainLayout";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Orders from "./pages/Orders";
+import OrderDetail from "./pages/OrderDetail";
+import Inventory from "./pages/Inventory";
+import Customers from "./pages/Customers";
+import CustomerDetail from "./pages/CustomerDetail";
+import Reports from "./pages/Reports";
+import UsersPage from "./pages/Users";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
@@ -30,8 +28,9 @@ function App() {
           <Route path="/customers/:id" element={<CustomerDetail />} />
           <Route path="/reports" element={<Reports />} />
 
+          {/* Gestión de usuarios exclusiva para Administradores */}
           <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
-            <Route path="/users" element={<Users />} />
+            <Route path="/users" element={<UsersPage />} />
           </Route>
         </Route>
       </Route>

@@ -5,45 +5,66 @@
 @layer base {
   html {
     @apply antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum" 1;
   }
 
   body {
-    @apply bg-linen-100 text-ink-700 dark:bg-ink-900 dark:text-linen-100 transition-colors duration-200;
-    font-feature-settings: "tnum" 1;
+    @apply bg-canvas text-ink-900 font-sans min-h-screen transition-colors duration-300;
   }
 
-  h1,
-  h2,
-  h3 {
-    @apply font-display;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif tracking-tight text-ink-950;
   }
 
-  /* Foco de teclado visible y consistente en toda la app */
+  /* Focus visible de lujo en latón */
   :focus-visible {
     outline: 2px solid theme("colors.brass.500");
     outline-offset: 2px;
-    border-radius: 4px;
-  }
-
-  ::selection {
-    background-color: theme("colors.brass.200");
   }
 }
 
 @layer components {
-  .kpi-figure {
-    @apply font-mono tabular-nums;
+  /* Separadores finos tipo prensa editorial */
+  .rule-hairline {
+    @apply border-t border-ink-100 dark:border-ink-800;
   }
 
-  .panel {
-    @apply bg-white dark:bg-ink-800 border border-ink-100/70 dark:border-ink-700 shadow-panel rounded-lg;
+  .rule-brass {
+    @apply border-t border-brass-300/40;
   }
 
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  /* Rótulo de sección estilo revista */
+  .editorial-tag {
+    @apply font-sans text-[10px] uppercase font-bold tracking-editorial text-ink-400;
   }
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-ink-200 dark:bg-ink-600 rounded-full;
+
+  /* Tarjeta editorial estructurada sin glassmorfismo */
+  .editorial-card {
+    @apply bg-surface border border-ink-100 rounded-none shadow-card transition-all duration-300;
+  }
+
+  /* Botones con remates editoriales */
+  .btn-editorial-primary {
+    @apply inline-flex items-center justify-center px-5 py-2.5 bg-ink-950 text-canvas text-xs font-semibold tracking-wider uppercase transition-all duration-200 hover:bg-brass-600 hover:text-white active:scale-[0.99] disabled:opacity-50;
+  }
+
+  .btn-editorial-secondary {
+    @apply inline-flex items-center justify-center px-4 py-2 bg-surface text-ink-900 text-xs font-semibold tracking-wider uppercase border border-ink-200 hover:border-ink-900 hover:bg-canvas-alt transition-all duration-200;
+  }
+
+  .btn-editorial-brass {
+    @apply inline-flex items-center justify-center px-4 py-2 bg-brass-500 text-white text-xs font-semibold tracking-wider uppercase hover:bg-brass-600 transition-all duration-200 shadow-sm;
+  }
+
+  /* Scrollbar discreto */
+  .scrollbar-editorial::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  .scrollbar-editorial::-webkit-scrollbar-thumb {
+    @apply bg-ink-200 hover:bg-ink-400 rounded-none;
+  }
+  .scrollbar-editorial::-webkit-scrollbar-track {
+    @apply bg-transparent;
   }
 }
