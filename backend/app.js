@@ -9,9 +9,13 @@ const { errorHandler, notFound } = require("./src/middleware/error.middleware");
 const app = express();
 
 // Asegurar directorio de uploads
-const uploadsDir = path.join(__dirname, "uploads", "products");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+  const uploadsDir = path.join(__dirname, "uploads", "products");
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (error) {
+  // Ignorar en entornos de solo lectura (ej. Serverless en Vercel)
 }
 
 app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") || "*" }));
