@@ -1,0 +1,7 @@
+{
+  "name": "crm-frontend-shim",
+  "private": true,
+  "scripts": {
+    "build": "node -e \"const { execSync } = require('child_process'); const fs = require('fs'); execSync('npm run build', { cwd: '..', stdio: 'inherit' }); fs.cpSync('../dist', './dist', { recursive: true });\""
+  }
+}
