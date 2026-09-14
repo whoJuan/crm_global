@@ -7,6 +7,7 @@ import {
   CreditCard,
   CalendarDays,
   FileCheck,
+  Filter,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Button from "../components/ui/Button";
@@ -96,7 +97,7 @@ const MOCK_ORDERS: Order[] = [
 export const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 350); // Consulta 1 a 1
+  const debouncedSearch = useDebounce(search, 350);
   const [statusFilter, setStatusFilter] = useState("TODOS");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -233,136 +234,158 @@ export const Orders: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Cabecera Editorial */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-ink-100 gap-6">
+      {/* Cabecera Neumórfica */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between pb-6 gap-6">
         <div>
-          <span className="editorial-tag text-brass-600">Registro de Ventas & Facturación</span>
-          <h1 className="font-serif text-4xl font-normal text-ink-950 mt-1">
-            Ventas <span className="italic font-light text-brass-600">&</span> Órdenes de Compra
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent bg-neu-surface px-3 py-1 rounded-full shadow-neu-inset-sm border border-white/20">
+              Ventas & Facturación
+            </span>
+            <span className="w-2 h-2 rounded-full bg-neu-success shadow-neu-glow-success animate-pulse" />
+          </div>
+          <h1 className="font-display text-3xl font-extrabold text-neu-text-dark">
+            Ventas <span className="text-neu-accent">&</span> Órdenes de Compra
           </h1>
-          <p className="text-sm text-ink-600 mt-2 font-light max-w-xl">
-            Control de pedidos, esquema de pagos parciales (50/50) y emisión de proformas imprimibles.
+          <p className="text-xs text-neu-text-sub mt-1">
+            Control de pedidos, esquema de pagos parciales (50/50) y emisión de proformas comerciales.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="primary" size="md" onClick={() => setIsModalOpen(true)}>
-            <Plus className="w-3.5 h-3.5 mr-2" /> Nueva Orden / Cotización
+          <Button variant="accent" size="md" onClick={() => setIsModalOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" /> Nueva Orden / Cotización
           </Button>
         </div>
       </header>
 
-      {/* Barra de Filtros & Búsqueda con Debounce 1 a 1 */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-ink-100">
-        <div className="flex items-center gap-2 overflow-x-auto">
-          {["TODOS", "PENDING", "CONFIRMED", "IN_PRODUCTION", "DELIVERED"].map((st) => (
+      {/* Barra de Filtros Neumórfica & Búsqueda */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-3xl bg-neu-surface shadow-neu-raised-sm border border-white/60">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-neu">
+          {[
+            { id: "TODOS", label: "Todas las Órdenes" },
+            { id: "PENDING", label: "Cotización" },
+            { id: "CONFIRMED", label: "Confirmadas" },
+            { id: "IN_PRODUCTION", label: "En Producción" },
+            { id: "DELIVERED", label: "Entregadas" },
+          ].map((st) => (
             <button
-              key={st}
-              onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1 text-xs font-mono uppercase tracking-wider whitespace-nowrap transition-colors ${
-                statusFilter === st
-                  ? "bg-ink-950 text-canvas font-semibold"
-                  : "bg-surface border border-ink-100 text-ink-600 hover:border-ink-400"
+              key={st.id}
+              onClick={() => setStatusFilter(st.id)}
+              className={`px-4 py-2 text-xs font-semibold rounded-2xl whitespace-nowrap transition-all duration-200 border ${
+                statusFilter === st.id
+                  ? "bg-neu-surface shadow-neu-inset border-white/20 text-neu-accent font-bold"
+                  : "bg-neu-surface shadow-neu-raised-xs border-white/60 text-neu-text-sub hover:text-neu-text-dark hover:shadow-neu-raised-sm"
               }`}
             >
-              {st === "TODOS" ? "Todas las Órdenes" : st}
+              {st.label}
             </button>
           ))}
         </div>
 
-        <div className="relative w-full md:w-64">
-          <Search className="w-3.5 h-3.5 text-ink-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="relative w-full md:w-72">
+          <Search className="w-4 h-4 text-neu-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar (consulta 1 a 1)..."
-            className="w-full bg-canvas-alt border border-ink-100 pl-8 pr-3 py-1.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500 font-mono"
+            placeholder="Buscar por N° o Cliente..."
+            className="neu-input-search"
           />
         </div>
       </div>
 
-      {/* Tabla Editorial de Órdenes */}
-      <div className="editorial-card overflow-x-auto">
-        <table className="w-full text-left text-xs font-sans">
-          <thead>
-            <tr className="border-b border-ink-100 text-[10px] font-mono text-ink-400 uppercase bg-canvas-alt/50">
-              <th className="p-4 font-medium">N° Pedido</th>
-              <th className="p-4 font-medium">Cliente / Cuenta</th>
-              <th className="p-4 font-medium">Etapa Operativa</th>
-              <th className="p-4 font-medium text-right">Progreso de Pago</th>
-              <th className="p-4 font-medium text-right">Total Factura</th>
-              <th className="p-4 font-medium text-center">Estado</th>
-              <th className="p-4 font-medium text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-ink-100">
-            {filteredOrders.map((order) => {
-              const paidPercent = Math.round(
-                (Number(order.paidAmount) / Number(order.total || 1)) * 100
-              );
-              return (
-                <tr key={order.id} className="hover:bg-canvas-alt/40 transition-colors">
-                  <td className="p-4 font-mono font-semibold text-ink-950">
-                    <Link to={`/orders/${order.id}`} className="hover:text-brass-600">
-                      {order.orderNumber}
-                    </Link>
-                    <span className="block text-[10px] text-ink-400 font-normal">
-                      {formatDate(order.createdAt)}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <p className="font-medium text-ink-900">{order.customer?.name}</p>
-                    <span className="text-[10px] text-ink-500 font-mono">{order.customer?.phone}</span>
-                  </td>
-                  <td className="p-4">
-                    <span className="font-serif italic text-xs text-ink-800">
-                      {order.workshopStage || "En Preparación"}
-                    </span>
-                  </td>
-                  <td className="p-4 text-right font-mono">
-                    <div className="flex items-center justify-end gap-2 mb-1">
-                      <span className="text-[11px] font-bold text-ink-900">
-                        {formatCurrency(order.paidAmount)}
+      {/* Tabla Neumórfica de Órdenes */}
+      <div className="neu-card p-6 md:p-8">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-neu-surfaceDark/40 text-[10px] font-bold uppercase tracking-wider text-neu-text-muted">
+                <th className="pb-3 pl-3">N° Pedido</th>
+                <th className="pb-3">Cliente / Cuenta</th>
+                <th className="pb-3">Etapa Operativa</th>
+                <th className="pb-3 text-right">Progreso de Pago</th>
+                <th className="pb-3 text-right">Total Factura</th>
+                <th className="pb-3 text-center">Estado</th>
+                <th className="pb-3 text-center pr-3">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neu-surfaceDark/30">
+              {filteredOrders.map((order) => {
+                const paidPercent = Math.round(
+                  (Number(order.paidAmount) / Number(order.total || 1)) * 100
+                );
+                return (
+                  <tr
+                    key={order.id}
+                    className="hover:bg-white/40 transition-colors"
+                  >
+                    <td className="py-4 pl-3 font-mono font-bold text-neu-text-dark">
+                      <Link
+                        to={`/orders/${order.id}`}
+                        className="hover:text-neu-accent transition-colors flex items-center gap-1.5"
+                      >
+                        {order.orderNumber}
+                      </Link>
+                      <span className="block text-[10px] text-neu-text-muted font-normal">
+                        {formatDate(order.createdAt)}
                       </span>
-                      <span className="text-[10px] text-ink-400">/ {formatCurrency(order.total)}</span>
-                    </div>
-                    {/* Barra de progreso de pago */}
-                    <div className="w-32 bg-ink-100 h-1.5 ml-auto overflow-hidden">
-                      <div
-                        className={`h-full ${
-                          paidPercent >= 100
-                            ? "bg-sage-600"
-                            : paidPercent >= 50
-                            ? "bg-brass-500"
-                            : "bg-clay-500"
-                        }`}
-                        style={{ width: `${Math.min(100, paidPercent)}%` }}
-                      />
-                    </div>
-                  </td>
-                  <td className="p-4 text-right font-mono font-bold text-ink-950 text-sm">
-                    {formatCurrency(order.total)}
-                  </td>
-                  <td className="p-4 text-center">
-                    <OrderStatusBadge status={order.status} />
-                  </td>
-                  <td className="p-4 text-center">
-                    <Link
-                      to={`/orders/${order.id}`}
-                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-brass-600 hover:text-ink-950 uppercase tracking-wider"
-                    >
-                      <Eye className="w-3.5 h-3.5" /> Ficha
-                    </Link>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    <td className="py-4">
+                      <p className="font-bold text-neu-text-dark">{order.customer?.name}</p>
+                      <span className="text-[10px] text-neu-text-muted font-mono">
+                        {order.customer?.phone}
+                      </span>
+                    </td>
+                    <td className="py-4">
+                      <span className="text-xs text-neu-text-sub font-medium">
+                        {order.workshopStage || "En Preparación"}
+                      </span>
+                    </td>
+                    <td className="py-4 text-right font-mono">
+                      <div className="flex items-center justify-end gap-1.5 mb-1">
+                        <span className="text-xs font-bold text-neu-text-dark">
+                          {formatCurrency(order.paidAmount)}
+                        </span>
+                        <span className="text-[10px] text-neu-text-muted">
+                          / {formatCurrency(order.total)}
+                        </span>
+                      </div>
+                      <div className="w-28 bg-neu-surface shadow-neu-inset rounded-full h-2 ml-auto overflow-hidden p-0.5">
+                        <div
+                          className={`h-full rounded-full transition-all duration-300 ${
+                            paidPercent >= 100
+                              ? "bg-neu-success"
+                              : paidPercent >= 50
+                              ? "bg-neu-accent"
+                              : "bg-neu-warning"
+                          }`}
+                          style={{ width: `${Math.min(100, paidPercent)}%` }}
+                        />
+                      </div>
+                    </td>
+                    <td className="py-4 text-right font-mono font-extrabold text-neu-text-dark text-sm">
+                      {formatCurrency(order.total)}
+                    </td>
+                    <td className="py-4 text-center">
+                      <OrderStatusBadge status={order.status} />
+                    </td>
+                    <td className="py-4 text-center pr-3">
+                      <Link
+                        to={`/orders/${order.id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neu-surface shadow-neu-raised-xs border border-white/60 text-xs font-bold text-neu-accent hover:shadow-neu-inset active:scale-95 transition-all"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> Ficha
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Modal para Nueva Orden / Cotización */}
+      {/* Modal Neumórfico para Nueva Orden / Cotización */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -370,17 +393,17 @@ export const Orders: React.FC = () => {
         subtitle="Mesa de cotización con cálculo automático de anticipos e ítems"
         maxWidth="2xl"
       >
-        <form onSubmit={handleCreateOrder} className="space-y-6 text-xs font-sans">
+        <form onSubmit={handleCreateOrder} className="space-y-6 text-xs">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Cliente / Cuenta *
               </label>
               <select
                 required
                 value={selectedCustomerId}
                 onChange={(e) => setSelectedCustomerId(e.target.value)}
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                className="neu-input"
               >
                 <option value="">Selecciona un cliente...</option>
                 <option value="1">Carolina Santamaría (Estudio Vanguardia)</option>
@@ -390,44 +413,46 @@ export const Orders: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Fecha Estimada de Entrega
               </label>
               <input
                 type="date"
                 value={deliveryDate}
                 onChange={(e) => setDeliveryDate(e.target.value)}
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 font-mono focus:outline-none focus:border-brass-500"
+                className="neu-input font-mono"
               />
             </div>
           </div>
 
           {/* Selector de Ítems */}
-          <div className="border-t border-b border-ink-100 py-4 space-y-3">
+          <div className="p-4 rounded-2xl bg-neu-surface shadow-neu-inset border border-white/20 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="editorial-tag text-brass-600">Ítems & Servicios del Pedido</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent">
+                Ítems & Servicios del Pedido
+              </span>
               <button
                 type="button"
                 onClick={() => handleAddItem(1)}
-                className="text-[11px] font-semibold text-brass-600 hover:text-ink-950 uppercase"
+                className="px-3 py-1 rounded-full bg-neu-surface shadow-neu-raised-xs border border-white/60 text-[11px] font-bold text-neu-accent hover:shadow-neu-inset transition-all"
               >
                 + Añadir Ítem del Catálogo
               </button>
             </div>
 
             {orderItems.length === 0 ? (
-              <div className="p-4 bg-canvas-alt text-center text-ink-400 italic">
+              <div className="p-4 rounded-xl bg-neu-surface/50 text-center text-neu-text-muted italic border border-dashed border-neu-surfaceDark">
                 No has agregado ítems aún. Haz clic en el botón superior para añadir.
               </div>
             ) : (
-              <div className="space-y-2 font-mono">
+              <div className="space-y-2">
                 {orderItems.map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-3 bg-canvas-alt border border-ink-100 flex items-center justify-between gap-4"
+                    className="p-3 rounded-xl bg-neu-surface shadow-neu-raised-xs border border-white/60 flex items-center justify-between gap-4"
                   >
                     <div className="flex-1">
-                      <p className="font-serif text-sm font-medium text-ink-950">
+                      <p className="text-xs font-bold text-neu-text-dark">
                         Ítem Ref #{item.productId}
                       </p>
                       <input
@@ -440,7 +465,7 @@ export const Orders: React.FC = () => {
                           );
                         }}
                         placeholder="Especificaciones o notas de entrega..."
-                        className="w-full bg-surface border border-ink-200 p-1 text-[11px] text-ink-900 mt-1 font-sans"
+                        className="w-full bg-neu-surface rounded-lg shadow-neu-inset px-2 py-1 text-[11px] text-neu-text-main mt-1 border border-white/20"
                       />
                     </div>
                     <div className="flex items-center gap-3">
@@ -454,9 +479,9 @@ export const Orders: React.FC = () => {
                             prev.map((it, i) => (i === idx ? { ...it, quantity: q } : it))
                           );
                         }}
-                        className="w-14 bg-surface border border-ink-200 p-1 text-center font-mono"
+                        className="w-14 bg-neu-surface rounded-lg shadow-neu-inset px-2 py-1 text-center font-mono text-xs border border-white/20"
                       />
-                      <span className="font-bold text-ink-950 w-28 text-right">
+                      <span className="font-bold font-mono text-neu-text-dark w-28 text-right">
                         {formatCurrency(item.unitPrice * item.quantity)}
                       </span>
                     </div>
@@ -467,45 +492,47 @@ export const Orders: React.FC = () => {
           </div>
 
           {/* Cálculos Financieros y Anticipo */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Descuento Especial
               </label>
               <input
                 type="number"
                 value={discount}
                 onChange={(e) => setDiscount(e.target.value)}
-                className="w-full bg-canvas-alt border border-ink-200 p-2 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                className="neu-input font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
-                Anticipo Inicial (50% Sugerido)
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
+                Anticipo Inicial (50%)
               </label>
               <input
                 type="number"
                 value={initialDeposit}
                 onChange={(e) => setInitialDeposit(e.target.value)}
                 placeholder={formatCurrency(calculateTotal() * 0.5)}
-                className="w-full bg-canvas-alt border border-ink-200 p-2 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                className="neu-input font-mono"
               />
             </div>
 
-            <div className="p-3 bg-ink-950 text-canvas flex flex-col justify-between">
-              <span className="editorial-tag text-brass-300 text-[9px]">Total de la Orden</span>
-              <p className="font-serif text-xl font-normal text-white">
+            <div className="p-4 rounded-2xl bg-neu-surface shadow-neu-raised-sm border border-white/60 flex flex-col justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent">
+                Total Estimado
+              </span>
+              <p className="font-display text-xl font-extrabold text-neu-text-dark mt-1 font-mono">
                 {formatCurrency(calculateTotal())}
               </p>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-ink-100 flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-neu-surfaceDark/50 flex items-center justify-end gap-3">
             <Button type="button" variant="secondary" onClick={() => setIsModalOpen(false)}>
               Cancelar
             </Button>
-            <Button type="submit" variant="primary">
+            <Button type="submit" variant="accent">
               Guardar & Emitir Orden
             </Button>
           </div>

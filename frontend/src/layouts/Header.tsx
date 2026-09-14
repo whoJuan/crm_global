@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Bell, Compass, Sparkles } from "lucide-react";
+import { Search, Compass, Bell, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 
 interface HeaderProps {
@@ -18,24 +18,26 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, onOpenTour }) =
   });
 
   return (
-    <header className="bg-surface/90 border-b border-ink-100 py-4 px-8 lg:px-10 flex items-center justify-between sticky top-0 z-20">
+    <header className="bg-neu-base/95 backdrop-blur-sm py-4 px-6 lg:px-8 flex items-center justify-between sticky top-0 z-20 border-b border-neu-surfaceDark/40">
       <div>
         <div className="flex items-center gap-2">
-          <span className="editorial-tag text-brass-600">Global Commerce Edition</span>
-          <span className="text-[10px] text-ink-300">·</span>
-          <span className="text-[11px] font-mono text-ink-500 capitalize">{currentDate}</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent bg-neu-surface px-2.5 py-0.5 rounded-full shadow-neu-inset-sm border border-white/20">
+            Global Control Hub
+          </span>
+          <span className="text-[10px] text-neu-text-muted">·</span>
+          <span className="text-xs font-mono text-neu-text-sub capitalize">{currentDate}</span>
         </div>
-        {title && <h2 className="font-serif text-lg font-medium text-ink-950 mt-0.5">{title}</h2>}
+        {title && <h2 className="font-display text-lg font-bold text-neu-text-dark mt-0.5">{title}</h2>}
       </div>
 
-      <div className="flex items-center gap-5">
-        {/* Buscador Universal */}
-        <div className="relative hidden md:block w-64">
-          <Search className="w-3.5 h-3.5 text-ink-400 absolute left-3 top-1/2 -translate-y-1/2" />
+      <div className="flex items-center gap-4">
+        {/* Buscador Neumórfico Incrustado */}
+        <div className="relative hidden md:block w-72">
+          <Search className="w-4 h-4 text-neu-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Buscar órdenes, piezas, clientes..."
-            className="w-full bg-canvas-alt border border-ink-100 pl-9 pr-3 py-1.5 text-xs text-ink-900 placeholder:text-ink-400 placeholder:italic focus:outline-none focus:border-brass-500 focus:bg-surface transition-all"
+            placeholder="Buscar órdenes, productos, clientes..."
+            className="neu-input-search"
           />
         </div>
 
@@ -43,22 +45,26 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, onOpenTour }) =
         {onOpenTour && (
           <button
             onClick={onOpenTour}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-brass-50 text-brass-700 hover:bg-brass-100 border border-brass-200 text-xs font-mono font-semibold transition-colors shadow-xs"
-            title="Abrir la guía paso a paso del CRM"
+            className="flex items-center gap-2 px-4 py-2 bg-neu-surface rounded-2xl shadow-neu-raised-xs border border-white/60 text-xs font-semibold text-neu-accent hover:shadow-neu-raised active:shadow-neu-pressed transition-all"
+            title="Abrir la guía interactiva del CRM"
           >
-            <Compass className="w-3.5 h-3.5 text-brass-600" />
-            <span className="hidden sm:inline">Guía del Sistema</span>
+            <Compass className="w-4 h-4 text-neu-accent" />
+            <span className="hidden sm:inline">Guía Rápida</span>
           </button>
         )}
 
         {/* Perfil de Usuario */}
-        <div className="flex items-center gap-3 pl-3 border-l border-ink-100">
-          <div className="w-7 h-7 bg-ink-950 text-canvas font-serif text-xs flex items-center justify-center font-bold">
+        <div className="flex items-center gap-3 pl-3 border-l border-neu-surfaceDark/60">
+          <div className="w-9 h-9 rounded-full bg-neu-surface shadow-neu-raised-sm flex items-center justify-center font-bold text-xs text-neu-accent border border-white/60">
             {user?.name ? user.name[0].toUpperCase() : "G"}
           </div>
           <div className="hidden sm:block text-left">
-            <p className="text-xs font-semibold text-ink-900 leading-none">{user?.name || "Administrador"}</p>
-            <span className="text-[9px] font-mono text-brass-600 uppercase">{user?.role || "GLOBAL STAFF"}</span>
+            <p className="text-xs font-bold text-neu-text-dark leading-none">
+              {user?.name || "Administrador"}
+            </p>
+            <span className="text-[9px] font-mono text-neu-accent font-semibold uppercase">
+              {user?.role || "ADMIN"}
+            </span>
           </div>
         </div>
       </div>

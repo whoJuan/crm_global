@@ -10,7 +10,6 @@ export const MainLayout: React.FC = () => {
   useEffect(() => {
     const hasCompleted = localStorage.getItem("hasCompletedTour");
     if (!hasCompleted) {
-      // Activa automáticamente el tour en el primer ingreso tras 500ms
       const timer = setTimeout(() => {
         setIsTourOpen(true);
       }, 500);
@@ -19,11 +18,11 @@ export const MainLayout: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-canvas">
+    <div className="flex min-h-screen bg-neu-base">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <Header onOpenTour={() => setIsTourOpen(true)} />
-        <main className="flex-1 p-8 lg:p-10 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-6 lg:p-8 max-w-7xl w-full mx-auto">
           <Outlet />
         </main>
       </div>

@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   Clock,
   Sparkles,
+  Receipt,
+  CreditCard,
 } from "lucide-react";
 import Button from "../components/ui/Button";
 import OrderStatusBadge from "../components/ui/OrderStatusBadge";
@@ -54,7 +56,7 @@ export const OrderDetail: React.FC = () => {
         product: {
           id: 1,
           sku: "ART-001",
-          name: "Sillón Lounge de Diseño Editorial",
+          name: "Sillón Lounge de Diseño",
           collection: "Línea Signature",
           dimensions: "90 x 95 x 82 cm",
           price: 4850000,
@@ -96,7 +98,7 @@ export const OrderDetail: React.FC = () => {
   }, [id]);
 
   if (!order) {
-    return <div className="p-10 text-center text-ink-500">Cargando detalles de la orden...</div>;
+    return <div className="p-10 text-center text-neu-text-muted">Cargando detalles de la orden...</div>;
   }
 
   const balanceDue = Math.max(0, Number(order.total) - Number(order.paidAmount));
@@ -110,7 +112,7 @@ export const OrderDetail: React.FC = () => {
       <div className="flex items-center justify-between">
         <Link
           to="/orders"
-          className="text-xs uppercase font-semibold text-ink-500 hover:text-ink-950 flex items-center gap-1.5 transition-colors"
+          className="px-4 py-2 rounded-2xl bg-neu-surface shadow-neu-raised-xs border border-white/60 text-xs font-bold text-neu-text-sub hover:text-neu-text-dark hover:shadow-neu-inset flex items-center gap-2 transition-all"
         >
           <ArrowLeft className="w-4 h-4" /> Volver a Órdenes
         </Link>
@@ -121,168 +123,170 @@ export const OrderDetail: React.FC = () => {
           onClick={() => window.print()}
           className="print:hidden"
         >
-          <Printer className="w-3.5 h-3.5 mr-1.5" /> Imprimir Proforma
+          <Printer className="w-3.5 h-3.5 mr-1.5 text-neu-accent" /> Imprimir Proforma
         </Button>
       </div>
 
-      {/* DOCUMENTO EDITORIAL / FACTURA PROFORMA */}
-      <div className="editorial-card p-10 bg-surface border border-ink-200 space-y-10 shadow-elevated">
-        {/* Cabecera de la Casa / Negocio */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between pb-8 border-b border-ink-100 gap-6">
+      {/* FICHA PROFORMA NEUMÓRFICA */}
+      <div className="neu-card p-8 md:p-12 space-y-8 shadow-neu-raised-lg">
+        {/* Cabecera del Documento */}
+        <div className="flex flex-col md:flex-row md:items-start justify-between pb-6 border-b border-neu-surfaceDark/50 gap-6">
           <div>
-            <span className="editorial-tag text-brass-600">Proforma Oficial de Venta</span>
-            <h1 className="font-serif text-3xl font-normal text-ink-950 mt-1">
-              Global <span className="italic font-light text-brass-600">Commerce</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent bg-neu-surface px-3 py-1 rounded-full shadow-neu-inset-sm border border-white/20">
+              Proforma Oficial de Venta
+            </span>
+            <h1 className="font-display text-3xl font-extrabold text-neu-text-dark mt-2">
+              Global <span className="text-neu-accent">CRM Studio</span>
             </h1>
-            <p className="text-xs text-ink-500 mt-1 italic font-light">
-              Maison & Commerce · Gestión Comercial & Servicios
+            <p className="text-xs text-neu-text-sub mt-0.5">
+              Gestión Comercial, Pedidos y Servicios
             </p>
           </div>
 
           <div className="text-left md:text-right font-mono">
-            <span className="editorial-tag text-ink-400 block">Número de Factura / Orden</span>
-            <h2 className="text-2xl font-bold text-ink-950 mt-0.5">{order.orderNumber}</h2>
-            <p className="text-xs text-ink-500 mt-1">Fecha de Emisión: {formatDate(order.createdAt)}</p>
-            <div className="mt-2">
+            <span className="text-[10px] uppercase font-bold text-neu-text-muted block">
+              Número de Orden
+            </span>
+            <h2 className="text-2xl font-bold text-neu-text-dark mt-0.5">{order.orderNumber}</h2>
+            <p className="text-xs text-neu-text-sub mt-1">Emisión: {formatDate(order.createdAt)}</p>
+            <div className="mt-2 flex md:justify-end">
               <OrderStatusBadge status={order.status} />
             </div>
           </div>
         </div>
 
-        {/* Datos del Cliente */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs font-sans">
-          <div className="p-4 bg-canvas-alt border border-ink-100 space-y-1.5">
-            <span className="editorial-tag text-brass-600">Cliente Destinatario</span>
-            <h3 className="font-serif text-lg font-medium text-ink-950">{order.customer?.name}</h3>
+        {/* Datos del Cliente & Entrega en Tarjetas Hundidas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+          <div className="p-5 rounded-3xl bg-neu-surface shadow-neu-inset border border-white/20 space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent">
+              Cliente Destinatario
+            </span>
+            <h3 className="font-display text-base font-bold text-neu-text-dark">
+              {order.customer?.name}
+            </h3>
             {order.customer?.email && (
-              <p className="text-ink-600 font-mono text-[11px]">{order.customer.email}</p>
+              <p className="text-neu-text-sub font-mono text-[11px]">{order.customer.email}</p>
             )}
-            <p className="text-ink-600">{order.customer?.phone}</p>
+            <p className="text-neu-text-sub">{order.customer?.phone}</p>
             {order.customer?.address && (
-              <p className="text-ink-500 italic">
+              <p className="text-neu-text-muted italic">
                 {order.customer.address}, {order.customer.city}
               </p>
             )}
           </div>
 
-          <div className="p-4 bg-canvas-alt border border-ink-100 space-y-2 font-mono">
-            <span className="editorial-tag text-brass-600">Información de Entrega & Operación</span>
+          <div className="p-5 rounded-3xl bg-neu-surface shadow-neu-inset border border-white/20 space-y-2.5 font-mono">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent">
+              Información de Operación & Entrega
+            </span>
             <div className="flex items-center justify-between">
-              <span className="text-ink-500">Estado Operativo:</span>
-              <strong className="text-ink-950">{order.workshopStage || "En Preparación"}</strong>
+              <span className="text-neu-text-muted">Etapa de Taller:</span>
+              <strong className="text-neu-text-dark font-semibold">
+                {order.workshopStage || "En Preparación"}
+              </strong>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-ink-500">Fecha Estimada de Entrega:</span>
-              <span className="text-ink-950">{formatDate(order.deliveryDate)}</span>
+              <span className="text-neu-text-muted">Fecha Estimada:</span>
+              <span className="text-neu-text-dark font-semibold">{formatDate(order.deliveryDate)}</span>
             </div>
           </div>
         </div>
 
         {/* Tabla Desglosada de Ítems */}
         <div>
-          <span className="editorial-tag text-brass-600 mb-3 block">Desglose de Ítems & Servicios</span>
-          <table className="w-full text-left text-xs font-sans">
-            <thead>
-              <tr className="border-b border-ink-200 text-[10px] font-mono text-ink-400 uppercase bg-canvas-alt">
-                <th className="p-3 font-medium">SKU / Ref</th>
-                <th className="p-3 font-medium">Descripción & Especificaciones</th>
-                <th className="p-3 font-medium text-center">Cant.</th>
-                <th className="p-3 font-medium text-right">Precio Unitario</th>
-                <th className="p-3 font-medium text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-ink-100">
-              {order.details.map((detail, idx) => (
-                <tr key={idx}>
-                  <td className="p-3 font-mono font-bold text-ink-900">
-                    {detail.product?.sku || `REF-${detail.productId}`}
-                  </td>
-                  <td className="p-3">
-                    <p className="font-serif text-sm font-medium text-ink-950">
-                      {detail.product?.name || "Ítem de Catálogo"}
-                    </p>
-                    {detail.finishNotes && (
-                      <p className="text-xs text-ink-600 italic mt-0.5 font-light">
-                        {detail.finishNotes}
-                      </p>
-                    )}
-                  </td>
-                  <td className="p-3 text-center font-mono">{detail.quantity}</td>
-                  <td className="p-3 text-right font-mono">{formatCurrency(detail.unitPrice)}</td>
-                  <td className="p-3 text-right font-mono font-bold text-ink-950">
-                    {formatCurrency(detail.lineTotal)}
-                  </td>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent mb-3 block pl-1">
+            Desglose de Ítems & Servicios
+          </span>
+          <div className="overflow-x-auto rounded-2xl bg-neu-surface shadow-neu-inset-sm border border-white/20 p-2">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-neu-surfaceDark/40 text-[10px] font-bold uppercase tracking-wider text-neu-text-muted">
+                  <th className="p-3">SKU / Ref</th>
+                  <th className="p-3">Descripción & Acabados</th>
+                  <th className="p-3 text-center">Cant.</th>
+                  <th className="p-3 text-right">Precio Unitario</th>
+                  <th className="p-3 text-right">Total</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-neu-surfaceDark/30">
+                {order.details.map((detail, idx) => (
+                  <tr key={idx}>
+                    <td className="p-3 font-mono font-bold text-neu-text-dark">
+                      {detail.product?.sku || `REF-${detail.productId}`}
+                    </td>
+                    <td className="p-3">
+                      <p className="font-bold text-neu-text-dark">
+                        {detail.product?.name || "Ítem de Catálogo"}
+                      </p>
+                      {detail.finishNotes && (
+                        <p className="text-xs text-neu-text-sub mt-0.5">{detail.finishNotes}</p>
+                      )}
+                    </td>
+                    <td className="p-3 text-center font-mono font-semibold">{detail.quantity}</td>
+                    <td className="p-3 text-right font-mono">{formatCurrency(detail.unitPrice)}</td>
+                    <td className="p-3 text-right font-mono font-bold text-neu-text-dark">
+                      {formatCurrency(detail.lineTotal)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Resumen Financiero y Esquema de Pagos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-ink-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-neu-surfaceDark/50">
           {/* Historial de Pagos y Anticipos */}
           <div className="space-y-3">
-            <span className="editorial-tag text-brass-600">Historial de Pagos & Abonos</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent pl-1">
+              Historial de Pagos & Anticipos
+            </span>
             {order.payments && order.payments.length > 0 ? (
               <div className="space-y-2">
                 {order.payments.map((p) => (
                   <div
                     key={p.id}
-                    className="p-3 bg-canvas-alt border border-ink-100 flex items-center justify-between text-xs font-mono"
+                    className="p-3.5 rounded-2xl bg-neu-surface shadow-neu-raised-xs border border-white/60 flex items-center justify-between text-xs font-mono"
                   >
                     <div>
-                      <span className="font-bold text-ink-950">{formatCurrency(p.amount)}</span>
-                      <p className="text-[10px] text-ink-400">{p.method}</p>
+                      <span className="font-bold text-neu-text-dark">{formatCurrency(p.amount)}</span>
+                      <p className="text-[10px] text-neu-text-muted">{p.method}</p>
                     </div>
-                    <span className="text-[10px] text-sage-700 bg-sage-50 px-2 py-0.5 border border-sage-200">
+                    <span className="text-[10px] font-semibold text-neu-success bg-neu-surface px-2.5 py-0.5 rounded-full shadow-neu-inset-sm border border-white/20">
                       {formatDate(p.paymentDate)}
                     </span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-ink-400 italic">No se registran pagos previos para este pedido.</p>
+              <p className="text-xs text-neu-text-muted italic">No se registran pagos previos para este pedido.</p>
             )}
           </div>
 
           {/* Liquidación Final */}
-          <div className="space-y-2 text-xs font-mono">
-            <div className="flex items-center justify-between text-ink-600">
+          <div className="p-5 rounded-3xl bg-neu-surface shadow-neu-raised-sm border border-white/60 space-y-2.5 text-xs font-mono">
+            <div className="flex items-center justify-between text-neu-text-sub">
               <span>Subtotal:</span>
               <span>{formatCurrency(order.subtotal)}</span>
             </div>
             {Number(order.discount) > 0 && (
-              <div className="flex items-center justify-between text-clay-600">
-                <span>Descuento Aplicado:</span>
+              <div className="flex items-center justify-between text-neu-danger">
+                <span>Descuento Especial:</span>
                 <span>- {formatCurrency(order.discount)}</span>
               </div>
             )}
-            <div className="flex items-center justify-between text-base font-bold text-ink-950 pt-2 border-t border-ink-200 font-serif">
-              <span>Total Orden:</span>
+            <div className="flex items-center justify-between text-base font-bold text-neu-text-dark pt-2 border-t border-neu-surfaceDark/50">
+              <span>Total Facturado:</span>
               <span>{formatCurrency(order.total)}</span>
             </div>
-            <div className="flex items-center justify-between text-sage-600 pt-1">
+            <div className="flex items-center justify-between text-neu-success pt-1 font-semibold">
               <span>Abonos Recibidos ({paidPercent}%):</span>
               <span>{formatCurrency(order.paidAmount)}</span>
             </div>
-            <div className="flex items-center justify-between text-clay-700 font-bold pt-2 border-t border-ink-100 bg-clay-50/50 p-2">
+            <div className="flex items-center justify-between text-neu-danger font-bold pt-2 border-t border-neu-surfaceDark/50 bg-neu-surface rounded-2xl shadow-neu-inset p-3">
               <span>Saldo Pendiente:</span>
-              <span>{formatCurrency(balanceDue)}</span>
+              <span className="text-base">{formatCurrency(balanceDue)}</span>
             </div>
-          </div>
-        </div>
-
-        {/* Firmas de Conformidad */}
-        <div className="grid grid-cols-2 gap-12 pt-12 border-t border-ink-100 text-center text-xs text-ink-500 font-mono">
-          <div>
-            <div className="border-t border-ink-300 w-48 mx-auto mb-2" />
-            <p className="font-semibold text-ink-900">Emisor Comercial</p>
-            <p className="text-[10px]">Global CRM · Maison & Commerce</p>
-          </div>
-          <div>
-            <div className="border-t border-ink-300 w-48 mx-auto mb-2" />
-            <p className="font-semibold text-ink-900">{order.customer?.name}</p>
-            <p className="text-[10px]">Aceptación del Cliente</p>
           </div>
         </div>
       </div>

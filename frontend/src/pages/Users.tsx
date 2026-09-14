@@ -1,5 +1,18 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Plus, Fingerprint, ShieldCheck, MailCheck, CalendarDays, KeyRound, UserPlus, Search, Shield, UserCheck, Trash2 } from "lucide-react";
+import {
+  Plus,
+  Fingerprint,
+  ShieldCheck,
+  MailCheck,
+  CalendarDays,
+  KeyRound,
+  UserPlus,
+  Search,
+  Shield,
+  UserCheck,
+  Trash2,
+  Lock,
+} from "lucide-react";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
 import Badge from "../components/ui/Badge";
@@ -101,127 +114,124 @@ export const UsersPage: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Cabecera Editorial */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-ink-100 gap-6">
+      {/* Cabecera Neumórfica */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between pb-6 gap-6">
         <div>
-          <span className="editorial-tag text-brass-600">Control de Accesos & Roles 1 a 1</span>
-          <h1 className="font-serif text-4xl font-normal text-ink-950 mt-1">
-            Equipo <span className="italic font-light text-brass-600">&</span> Usuarios del Sistema
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent bg-neu-surface px-3 py-1 rounded-full shadow-neu-inset-sm border border-white/20">
+              Control de Accesos & Roles
+            </span>
+            <span className="w-2 h-2 rounded-full bg-neu-success shadow-neu-glow-success animate-pulse" />
+          </div>
+          <h1 className="font-display text-3xl font-extrabold text-neu-text-dark">
+            Equipo <span className="text-neu-accent">&</span> Cuentas del Sistema
           </h1>
-          <p className="text-sm text-ink-600 mt-2 font-light max-w-xl">
-            Software privado: La creación de cuentas y asignación de permisos es facultad exclusiva del Administrador.
+          <p className="text-xs text-neu-text-sub mt-1">
+            Software privado: La administración y asignación de permisos es facultad del Administrador.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="primary" size="md" onClick={() => setIsModalOpen(true)}>
-            <UserPlus className="w-3.5 h-3.5 mr-2" /> Agregar Miembro
+          <Button variant="accent" size="md" onClick={() => setIsModalOpen(true)}>
+            <UserPlus className="w-4 h-4 mr-2" /> Agregar Miembro
           </Button>
         </div>
       </header>
 
       {/* Alerta de confirmación */}
       {feedback && (
-        <div
-          className={`p-4 border text-xs font-mono flex items-center justify-between ${
-            feedback.type === "success"
-              ? "bg-sage-50 border-sage-200 text-sage-800"
-              : "bg-clay-50 border-clay-200 text-clay-800"
-          }`}
-        >
+        <div className="p-4 rounded-2xl bg-neu-surface shadow-neu-inset border border-white/20 text-xs font-semibold text-neu-success flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-brass-600" />
+            <ShieldCheck className="w-4 h-4 text-neu-success" />
             <span>{feedback.text}</span>
           </div>
-          <button onClick={() => setFeedback(null)} className="text-ink-400 hover:text-ink-900 font-bold">
+          <button onClick={() => setFeedback(null)} className="text-neu-text-muted hover:text-neu-text-dark">
             ✕
           </button>
         </div>
       )}
 
-      {/* Barra de Filtros y Búsqueda 1 a 1 */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center">
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-ink-400 absolute left-3 top-1/2 -translate-y-1/2" />
+      {/* Barra de Filtros y Búsqueda */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-3xl bg-neu-surface shadow-neu-raised-sm border border-white/60">
+        <div className="flex items-center gap-2">
+          {[
+            { id: "ALL", label: "Todos los Miembros" },
+            { id: "ADMIN", label: "Administradores" },
+            { id: "DESIGNER", label: "Asesores / Ventas" },
+            { id: "WORKSHOP_LEAD", label: "Operaciones" },
+          ].map((rf) => (
+            <button
+              key={rf.id}
+              onClick={() => setRoleFilter(rf.id)}
+              className={`px-4 py-2 text-xs font-semibold rounded-2xl whitespace-nowrap transition-all duration-200 border ${
+                roleFilter === rf.id
+                  ? "bg-neu-surface shadow-neu-inset border-white/20 text-neu-accent font-bold"
+                  : "bg-neu-surface shadow-neu-raised-xs border-white/60 text-neu-text-sub hover:text-neu-text-dark hover:shadow-neu-raised-sm"
+              }`}
+            >
+              {rf.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative w-full md:w-72">
+          <Search className="w-4 h-4 text-neu-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nombre o correo (1 a 1)..."
-            className="w-full bg-surface border border-ink-200 pl-9 pr-4 py-2 text-xs text-ink-900 focus:outline-none focus:border-brass-500 font-mono transition-colors"
+            placeholder="Buscar por nombre o correo..."
+            className="neu-input-search"
           />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-ink-400 uppercase">Filtrar Rol:</span>
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            className="bg-surface border border-ink-200 px-3 py-2 text-xs text-ink-900 font-mono focus:outline-none focus:border-brass-500"
-          >
-            <option value="ALL">Todos los roles</option>
-            <option value="ADMIN">Administradores</option>
-            <option value="DESIGNER">Asesores Comerciales</option>
-            <option value="WORKSHOP_LEAD">Operaciones</option>
-            <option value="EMPLOYEE">Staff de Ventas</option>
-          </select>
         </div>
       </div>
 
-      {/* Tabla de Usuarios */}
-      <div className="editorial-card overflow-x-auto">
-        <table className="w-full text-left text-xs font-sans">
-          <thead>
-            <tr className="border-b border-ink-100 text-[10px] font-mono text-ink-400 uppercase bg-canvas-alt/50">
-              <th className="p-4 font-medium">Nombre del Miembro</th>
-              <th className="p-4 font-medium">Correo Electrónico</th>
-              <th className="p-4 font-medium">Rol Asignado</th>
-              <th className="p-4 font-medium">Fecha de Alta</th>
-              <th className="p-4 font-medium text-center">Estado</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-ink-100">
-            {filteredUsers.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="p-8 text-center text-ink-400 font-mono text-xs">
-                  No se encontraron usuarios con el criterio especificado.
-                </td>
-              </tr>
-            ) : (
-              filteredUsers.map((u) => (
-                <tr key={u.id} className="hover:bg-canvas-alt/40 transition-colors">
-                  <td className="p-4">
-                    <p className="font-serif text-sm font-medium text-ink-950">{u.name}</p>
-                  </td>
-                  <td className="p-4 font-mono text-ink-600">{u.email}</td>
-                  <td className="p-4">
-                    <Badge variant={u.role === "ADMIN" ? "dark" : u.role === "DESIGNER" ? "brass" : "sage"}>
-                      {u.role === "ADMIN" ? "Administrador" : u.role === "DESIGNER" ? "Asesor Comercial" : "Operaciones"}
-                    </Badge>
-                  </td>
-                  <td className="p-4 font-mono text-ink-500">{formatDate(u.createdAt)}</td>
-                  <td className="p-4 text-center font-mono">
-                    <span className="text-sage-700 bg-sage-50 border border-sage-200 px-2 py-0.5 text-[10px] font-bold">
-                      Activo
-                    </span>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      {/* Grilla de Usuarios Neumórficos */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredUsers.map((u) => (
+          <div
+            key={u.id}
+            className="neu-card p-6 space-y-4 hover:shadow-neu-raised-lg hover:-translate-y-1 transition-all duration-300"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-neu-surface shadow-neu-inset flex items-center justify-center text-sm font-bold text-neu-accent border border-white/20">
+                  {u.name.slice(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <h3 className="font-display text-base font-bold text-neu-text-dark">{u.name}</h3>
+                  <p className="text-xs text-neu-text-muted font-mono">{u.email}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-neu-surface shadow-neu-inset border border-white/20 flex items-center justify-between text-xs">
+              <span className="text-neu-text-sub font-medium">Nivel de Acceso</span>
+              <span className="font-bold text-neu-accent font-mono uppercase text-[11px]">
+                {u.role}
+              </span>
+            </div>
+
+            <div className="pt-3 border-t border-neu-surfaceDark/50 flex items-center justify-between text-xs text-neu-text-muted">
+              <span className="flex items-center gap-1.5 font-semibold text-neu-success">
+                <span className="w-2 h-2 rounded-full bg-neu-success shadow-neu-glow-success" /> Activo
+              </span>
+              <span className="font-mono text-[10px]">{formatDate(u.createdAt)}</span>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Modal para Crear Usuario */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Nuevo Integrante del Equipo"
-        subtitle="Crea credenciales individuales con asignación de rol (Solo Admin)"
+        title="Crear Nuevo Usuario del Sistema"
+        subtitle="Asigna permisos y credenciales de ingreso al CRM"
       >
-        <form onSubmit={handleCreateUser} className="space-y-4 text-xs font-sans">
+        <form onSubmit={handleCreateUser} className="space-y-4 text-xs">
           <div>
-            <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+            <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
               Nombre Completo *
             </label>
             <input
@@ -230,12 +240,12 @@ export const UsersPage: React.FC = () => {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="Ej. Mateo Sotomayor"
-              className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+              className="neu-input"
             />
           </div>
 
           <div>
-            <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+            <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
               Correo Electrónico *
             </label>
             <input
@@ -244,12 +254,12 @@ export const UsersPage: React.FC = () => {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               placeholder="usuario@crmglobal.com"
-              className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500 font-mono"
+              className="neu-input font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+            <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
               Contraseña de Acceso *
             </label>
             <input
@@ -258,31 +268,30 @@ export const UsersPage: React.FC = () => {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               placeholder="••••••••"
-              className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500 font-mono"
+              className="neu-input font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+            <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
               Rol Asignado
             </label>
             <select
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value as Role })}
-              className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500 font-mono"
+              className="neu-input"
             >
-              <option value="DESIGNER">Asesor Comercial / Consultor</option>
-              <option value="WORKSHOP_LEAD">Coordinador de Operaciones</option>
-              <option value="EMPLOYEE">Staff de Ventas</option>
-              <option value="ADMIN">Administrador General</option>
+              <option value="ADMIN">Administrador General (Acceso Total)</option>
+              <option value="DESIGNER">Asesor Comercial / Ventas</option>
+              <option value="WORKSHOP_LEAD">Líder de Operaciones / Taller</option>
             </select>
           </div>
 
-          <div className="pt-4 border-t border-ink-100 flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-neu-surfaceDark/50 flex items-center justify-end gap-3">
             <Button type="button" variant="secondary" onClick={() => setIsModalOpen(false)}>
               Cancelar
             </Button>
-            <Button type="submit" variant="primary">
+            <Button type="submit" variant="accent">
               Crear Usuario
             </Button>
           </div>
@@ -293,4 +302,3 @@ export const UsersPage: React.FC = () => {
 };
 
 export default UsersPage;
-

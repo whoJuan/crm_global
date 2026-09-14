@@ -11,9 +11,9 @@ import {
   FileSpreadsheet,
   LayoutGrid,
   Table as TableIcon,
-  BadgePercent,
   CheckCircle2,
   AlertCircle,
+  Sparkles,
 } from "lucide-react";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
@@ -27,7 +27,7 @@ const MOCK_PRODUCTS: Product[] = [
   {
     id: 1,
     sku: "ART-001",
-    name: "Sillón Lounge de Diseño Editorial",
+    name: "Sillón Lounge de Diseño",
     collection: "Línea Signature",
     description: "Diseño ergonómico premium con tapicería noble y estructura sólida.",
     materials: "Textil Italiano & Base en Madera Maciza",
@@ -102,7 +102,7 @@ export const Inventory: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
   const [viewMode, setViewMode] = useState<"lookbook" | "table">("lookbook");
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 350); // Consulta 1 a 1
+  const debouncedSearch = useDebounce(search, 350);
   const [selectedCategory, setSelectedCategory] = useState("TODAS");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -140,7 +140,6 @@ export const Inventory: React.FC = () => {
   };
 
   useEffect(() => {
-    // Dispara 1 sola consulta cuando el usuario pausa la escritura
     fetchProducts(debouncedSearch);
   }, [debouncedSearch]);
 
@@ -199,7 +198,6 @@ export const Inventory: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  // Manejo de archivo local desde el dispositivo
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -319,56 +317,68 @@ export const Inventory: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Cabecera Editorial */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-ink-100 gap-6">
+      {/* Cabecera Neumórfica */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between pb-6 gap-6">
         <div>
-          <span className="editorial-tag text-brass-600">Catálogo Universal · Bienes & Servicios</span>
-          <h1 className="font-serif text-4xl font-normal text-ink-950 mt-1">
-            Catálogo <span className="italic font-light text-brass-600">&</span> Servicios
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent bg-neu-surface px-3 py-1 rounded-full shadow-neu-inset-sm border border-white/20">
+              Catálogo & Stock
+            </span>
+            <span className="w-2 h-2 rounded-full bg-neu-success shadow-neu-glow-success animate-pulse" />
+          </div>
+          <h1 className="font-display text-3xl font-extrabold text-neu-text-dark">
+            Catálogo <span className="text-neu-accent">&</span> Servicios
           </h1>
-          <p className="text-sm text-ink-600 mt-2 font-light max-w-xl">
-            Gestión de productos, servicios, precios de venta y control de inventario con carga directa desde tu dispositivo.
+          <p className="text-xs text-neu-text-sub mt-1">
+            Gestión de artículos, servicios, precios de venta y control de existencias con carga local.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="bg-canvas-alt border border-ink-200 p-0.5 flex items-center">
+          {/* Selector de Modo Lookbook / Tabla con estilo Neumórfico */}
+          <div className="p-1.5 rounded-2xl bg-neu-surface shadow-neu-inset border border-white/20 flex items-center gap-1">
             <button
               onClick={() => setViewMode("lookbook")}
-              className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors ${
-                viewMode === "lookbook" ? "bg-surface text-ink-950 shadow-xs" : "text-ink-500 hover:text-ink-900"
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                viewMode === "lookbook"
+                  ? "bg-neu-surface shadow-neu-raised-xs text-neu-accent"
+                  : "text-neu-text-muted hover:text-neu-text-dark"
               }`}
             >
               <LayoutGrid className="w-3.5 h-3.5" /> Lookbook
             </button>
             <button
               onClick={() => setViewMode("table")}
-              className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-colors ${
-                viewMode === "table" ? "bg-surface text-ink-950 shadow-xs" : "text-ink-500 hover:text-ink-900"
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                viewMode === "table"
+                  ? "bg-neu-surface shadow-neu-raised-xs text-neu-accent"
+                  : "text-neu-text-muted hover:text-neu-text-dark"
               }`}
             >
-              <TableIcon className="w-3.5 h-3.5" /> Tabla Técnica
+              <TableIcon className="w-3.5 h-3.5" /> Tabla
             </button>
           </div>
 
-          <Button variant="primary" size="md" onClick={() => handleOpenModal()}>
-            <Plus className="w-3.5 h-3.5 mr-2" /> Agregar al Catálogo
+          <Button variant="accent" size="md" onClick={() => handleOpenModal()}>
+            <Plus className="w-4 h-4 mr-2" /> Agregar Ítem
           </Button>
         </div>
       </header>
 
-      {/* Barra de Filtros & Búsqueda con Debounce 1 a 1 */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-ink-100">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1">
-          <span className="editorial-tag text-[9px] mr-2 text-ink-400">Línea:</span>
+      {/* Barra de Filtros & Búsqueda */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-3xl bg-neu-surface shadow-neu-raised-sm border border-white/60">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-neu">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-neu-text-muted px-2">
+            Línea:
+          </span>
           {collections.map((col) => (
             <button
               key={col}
               onClick={() => setSelectedCategory(col)}
-              className={`px-3 py-1 text-xs font-mono uppercase tracking-wider whitespace-nowrap transition-colors ${
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-2xl whitespace-nowrap transition-all duration-200 border ${
                 selectedCategory === col
-                  ? "bg-ink-950 text-canvas font-semibold"
-                  : "bg-surface border border-ink-100 text-ink-600 hover:border-ink-400"
+                  ? "bg-neu-surface shadow-neu-inset border-white/20 text-neu-accent font-bold"
+                  : "bg-neu-surface shadow-neu-raised-xs border-white/60 text-neu-text-sub hover:text-neu-text-dark hover:shadow-neu-raised-sm"
               }`}
             >
               {col}
@@ -376,78 +386,86 @@ export const Inventory: React.FC = () => {
           ))}
         </div>
 
-        <div className="relative w-full md:w-64">
-          <Search className="w-3.5 h-3.5 text-ink-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="relative w-full md:w-72">
+          <Search className="w-4 h-4 text-neu-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Filtrar (consulta 1 a 1)..."
-            className="w-full bg-canvas-alt border border-ink-100 pl-8 pr-3 py-1.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500 font-mono"
+            placeholder="Filtrar por nombre o SKU..."
+            className="neu-input-search"
           />
         </div>
       </div>
 
-      {/* VISTA 1: LOOKBOOK VISUAL EDITORIAL */}
+      {/* VISTA 1: LOOKBOOK VISUAL NEUMÓRFICO */}
       {viewMode === "lookbook" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((item) => {
             const isLowStock = item.stock <= item.minStock;
             return (
               <article
                 key={item.id}
-                className="editorial-card group hover:-translate-y-1 transition-transform duration-300 flex flex-col justify-between"
+                className="neu-card p-5 group hover:shadow-neu-raised-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
-                  {/* Imagen */}
-                  <div className="relative aspect-[4/3] bg-canvas-alt overflow-hidden border-b border-ink-100">
+                  {/* Marco de Imagen con Relieve Hundido */}
+                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-neu-surface shadow-neu-inset border border-white/20 p-1">
                     <img
                       src={item.imageUrl || "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800"}
                       alt={item.name}
-                      className="w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                      className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
-                    <span className="absolute top-3 left-3 bg-surface/95 px-2.5 py-1 text-[10px] font-mono text-ink-900 border border-ink-200">
+                    <span className="absolute top-3 left-3 bg-neu-surface/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-mono font-bold text-neu-text-dark shadow-neu-raised-xs border border-white/40">
                       {item.sku}
                     </span>
-                    <span className="absolute bottom-3 right-3 bg-ink-950 text-canvas px-2.5 py-1 text-[11px] font-mono">
+                    <span className="absolute bottom-3 right-3 bg-neu-surface/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-mono font-extrabold text-neu-accent shadow-neu-raised-xs border border-white/40">
                       {formatCurrency(item.price)}
                     </span>
                   </div>
 
-                  {/* Ficha */}
-                  <div className="p-6 space-y-3">
-                    <div>
-                      <span className="editorial-tag text-brass-600">{item.collection}</span>
-                      <h3 className="font-serif text-xl font-medium text-ink-950 mt-0.5 group-hover:text-brass-600 transition-colors">
-                        {item.name}
-                      </h3>
-                      {item.description && (
-                        <p className="text-xs text-ink-600 mt-1 font-light leading-relaxed">{item.description}</p>
-                      )}
-                    </div>
-
+                  {/* Ficha Descriptiva */}
+                  <div className="p-3 pt-4 space-y-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent bg-neu-surface px-2.5 py-0.5 rounded-full shadow-neu-inset-sm border border-white/20">
+                      {item.collection}
+                    </span>
+                    <h3 className="font-display text-base font-bold text-neu-text-dark group-hover:text-neu-accent transition-colors">
+                      {item.name}
+                    </h3>
+                    {item.description && (
+                      <p className="text-xs text-neu-text-sub line-clamp-2 leading-relaxed">
+                        {item.description}
+                      </p>
+                    )}
                     {item.materials && (
-                      <p className="text-[11px] text-ink-500 italic">
-                        Especificación: {item.materials}
+                      <p className="text-[11px] text-neu-text-muted italic">
+                        {item.materials}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="p-6 pt-0 border-t border-ink-100 mt-4 flex items-center justify-between text-xs font-mono">
+                {/* Pie con Estado de Inventario y Botón de Edición Táctil */}
+                <div className="p-3 pt-3 border-t border-neu-surfaceDark/50 mt-2 flex items-center justify-between text-xs">
                   <div>
-                    <span className="text-[9px] text-ink-400 uppercase block">Inventario</span>
-                    <strong className={isLowStock ? "text-clay-600 font-bold" : "text-ink-900"}>
-                      {item.stock} unids {isLowStock && "(Bajo stock)"}
-                    </strong>
+                    <span className="text-[9px] uppercase font-bold text-neu-text-muted block">
+                      Existencias
+                    </span>
+                    <span
+                      className={`font-mono font-bold ${
+                        isLowStock ? "text-neu-danger" : "text-neu-text-dark"
+                      }`}
+                    >
+                      {item.stock} unidades {isLowStock && "(Bajo stock)"}
+                    </span>
                   </div>
 
                   <button
                     onClick={() => handleOpenModal(item)}
-                    className="p-1.5 text-ink-400 hover:text-ink-950 hover:bg-canvas-alt border border-ink-200"
-                    title="Editar Ficha"
+                    className="w-9 h-9 rounded-full bg-neu-surface shadow-neu-raised-xs flex items-center justify-center text-neu-text-sub hover:text-neu-accent hover:shadow-neu-inset active:scale-95 transition-all border border-white/60"
+                    title="Editar Ítem"
                   >
-                    <Edit3 className="w-3.5 h-3.5" />
+                    <Edit3 className="w-4 h-4" />
                   </button>
                 </div>
               </article>
@@ -455,96 +473,100 @@ export const Inventory: React.FC = () => {
           })}
         </div>
       ) : (
-        /* VISTA 2: TABLA TÉCNICA */
-        <div className="editorial-card overflow-x-auto">
-          <table className="w-full text-left text-xs font-sans">
-            <thead>
-              <tr className="border-b border-ink-100 text-[10px] font-mono text-ink-400 uppercase bg-canvas-alt/50">
-                <th className="p-4 font-medium">SKU</th>
-                <th className="p-4 font-medium">Nombre & Línea</th>
-                <th className="p-4 font-medium">Especificación</th>
-                <th className="p-4 font-medium text-center">Stock</th>
-                <th className="p-4 font-medium text-right">Costo / Margen</th>
-                <th className="p-4 font-medium text-right">Precio de Venta</th>
-                <th className="p-4 font-medium text-center">Acción</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-ink-100">
-              {filteredProducts.map((p) => {
-                const margin = p.cost
-                  ? Math.round(((Number(p.price) - Number(p.cost)) / Number(p.price)) * 100)
-                  : 50;
-                return (
-                  <tr key={p.id} className="hover:bg-canvas-alt/40 transition-colors">
-                    <td className="p-4 font-mono font-semibold text-ink-900">{p.sku}</td>
-                    <td className="p-4">
-                      <p className="font-serif text-sm font-medium text-ink-950">{p.name}</p>
-                      <span className="editorial-tag text-brass-600 text-[9px]">{p.collection}</span>
-                    </td>
-                    <td className="p-4 text-ink-600 text-xs italic">{p.materials || "—"}</td>
-                    <td className="p-4 text-center font-mono">
-                      <span
-                        className={`font-semibold ${
-                          p.stock <= p.minStock ? "text-clay-600 bg-clay-50 px-2 py-0.5 border border-clay-200" : "text-ink-900"
-                        }`}
-                      >
-                        {p.stock} unids
-                      </span>
-                    </td>
-                    <td className="p-4 text-right font-mono text-ink-500">
-                      {p.cost ? formatCurrency(p.cost) : "—"}
-                      <span className="block text-[10px] text-sage-600 font-bold">{margin}% Margen</span>
-                    </td>
-                    <td className="p-4 text-right font-mono font-bold text-ink-950">
-                      {formatCurrency(p.price)}
-                    </td>
-                    <td className="p-4 text-center">
-                      <button
-                        onClick={() => handleOpenModal(p)}
-                        className="p-1 text-ink-400 hover:text-ink-950 hover:bg-canvas-alt"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        /* VISTA 2: TABLA TÉCNICA NEUMÓRFICA */
+        <div className="neu-card p-6 md:p-8">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-neu-surfaceDark/40 text-[10px] font-bold uppercase tracking-wider text-neu-text-muted">
+                  <th className="pb-3 pl-3">SKU</th>
+                  <th className="pb-3">Nombre & Línea</th>
+                  <th className="pb-3">Especificación</th>
+                  <th className="pb-3 text-center">Stock</th>
+                  <th className="pb-3 text-right">Costo / Margen</th>
+                  <th className="pb-3 text-right">Precio de Venta</th>
+                  <th className="pb-3 text-center pr-3">Acción</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neu-surfaceDark/30">
+                {filteredProducts.map((p) => {
+                  const margin = p.cost
+                    ? Math.round(((Number(p.price) - Number(p.cost)) / Number(p.price)) * 100)
+                    : 50;
+                  return (
+                    <tr key={p.id} className="hover:bg-white/40 transition-colors">
+                      <td className="py-4 pl-3 font-mono font-bold text-neu-text-dark">{p.sku}</td>
+                      <td className="py-4">
+                        <p className="font-bold text-neu-text-dark">{p.name}</p>
+                        <span className="text-[10px] text-neu-accent font-semibold">{p.collection}</span>
+                      </td>
+                      <td className="py-4 text-neu-text-sub text-xs italic">{p.materials || "—"}</td>
+                      <td className="py-4 text-center font-mono">
+                        <span
+                          className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                            p.stock <= p.minStock
+                              ? "bg-neu-danger-light text-neu-danger shadow-neu-inset-sm"
+                              : "bg-neu-surface text-neu-text-dark shadow-neu-inset-sm"
+                          }`}
+                        >
+                          {p.stock} unids
+                        </span>
+                      </td>
+                      <td className="py-4 text-right font-mono text-neu-text-sub">
+                        {p.cost ? formatCurrency(p.cost) : "—"}
+                        <span className="block text-[10px] text-neu-success font-bold">{margin}% Margen</span>
+                      </td>
+                      <td className="py-4 text-right font-mono font-extrabold text-neu-text-dark text-sm">
+                        {formatCurrency(p.price)}
+                      </td>
+                      <td className="py-4 text-center pr-3">
+                        <button
+                          onClick={() => handleOpenModal(p)}
+                          className="w-8 h-8 rounded-full bg-neu-surface shadow-neu-raised-xs inline-flex items-center justify-center text-neu-text-sub hover:text-neu-accent hover:shadow-neu-inset transition-all"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      {/* Modal para Crear / Editar Producto con Carga de Archivo Local */}
+      {/* Modal para Crear / Editar Producto */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingProduct ? "Editar Ítem del Catálogo" : "Nuevo Ítem / Servicio"}
         subtitle="Configura precios, especificaciones y sube la imagen desde tu dispositivo"
       >
-        <form onSubmit={handleSaveProduct} className="space-y-5 text-xs font-sans">
+        <form onSubmit={handleSaveProduct} className="space-y-5 text-xs">
           {/* Zona de Subida de Imagen desde el Dispositivo */}
           <div>
-            <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1.5">
+            <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
               Fotografía de Catálogo (Subir desde tu dispositivo)
             </label>
 
             {imagePreview ? (
-              <div className="relative border border-ink-200 bg-canvas-alt p-3 flex items-center justify-between">
+              <div className="p-4 rounded-2xl bg-neu-surface shadow-neu-inset border border-white/20 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="w-16 h-16 object-cover border border-ink-200"
+                    className="w-16 h-16 rounded-xl object-cover shadow-neu-raised-xs border border-white/40"
                   />
                   <div>
-                    <span className="editorial-tag text-sage-700 font-bold flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Imagen Seleccionada
+                    <span className="text-[10px] font-bold text-neu-success uppercase tracking-wider flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Imagen Cargada
                     </span>
-                    <p className="text-xs text-ink-800 mt-0.5">
-                      {selectedFile ? selectedFile.name : "Imagen actual del catálogo"}
+                    <p className="text-xs font-bold text-neu-text-dark mt-0.5">
+                      {selectedFile ? selectedFile.name : "Imagen actual del producto"}
                     </p>
                     {selectedFile && (
-                      <span className="text-[10px] font-mono text-ink-400">
+                      <span className="text-[10px] font-mono text-neu-text-muted">
                         {(selectedFile.size / 1024).toFixed(1)} KB
                       </span>
                     )}
@@ -554,8 +576,8 @@ export const Inventory: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleRemoveImage}
-                  className="p-1.5 text-ink-400 hover:text-clay-600 hover:bg-clay-50 transition-colors"
-                  title="Eliminar y seleccionar otra"
+                  className="w-8 h-8 rounded-full bg-neu-surface shadow-neu-raised-xs flex items-center justify-center text-neu-text-sub hover:text-neu-danger hover:shadow-neu-inset transition-all"
+                  title="Eliminar imagen"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -566,10 +588,10 @@ export const Inventory: React.FC = () => {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed p-6 text-center cursor-pointer transition-all ${
+                className={`p-6 rounded-2xl border-2 border-dashed text-center cursor-pointer transition-all ${
                   isDragging
-                    ? "border-brass-600 bg-brass-50/50"
-                    : "border-ink-200 bg-canvas-alt hover:border-brass-500 hover:bg-canvas"
+                    ? "border-neu-accent bg-neu-accent/5 shadow-neu-inset"
+                    : "border-neu-surfaceDark bg-neu-surface shadow-neu-inset hover:border-neu-accent"
                 }`}
               >
                 <input
@@ -580,14 +602,14 @@ export const Inventory: React.FC = () => {
                   className="hidden"
                 />
                 <div className="flex flex-col items-center justify-center space-y-2">
-                  <div className="w-10 h-10 bg-surface border border-ink-200 flex items-center justify-center text-brass-600">
+                  <div className="w-10 h-10 rounded-full bg-neu-surface shadow-neu-raised-xs flex items-center justify-center text-neu-accent">
                     <ImagePlus className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="text-xs font-semibold text-ink-900 block">
-                      Haz clic para buscar en tu dispositivo o arrastra la imagen aquí
+                    <span className="text-xs font-bold text-neu-text-dark block">
+                      Haz clic para examinar o arrastra la foto aquí
                     </span>
-                    <span className="text-[10px] text-ink-400 font-mono">
+                    <span className="text-[10px] text-neu-text-muted font-mono">
                       Formatos compatibles: JPG, PNG o WEBP (máx. 5 MB)
                     </span>
                   </div>
@@ -598,7 +620,7 @@ export const Inventory: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 SKU / Código *
               </label>
               <input
@@ -606,12 +628,12 @@ export const Inventory: React.FC = () => {
                 required
                 value={formData.sku}
                 onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 font-mono focus:outline-none focus:border-brass-500"
+                className="neu-input font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Nombre del Ítem / Servicio *
               </label>
               <input
@@ -620,14 +642,14 @@ export const Inventory: React.FC = () => {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Ej. Sillón Lounge / Consultoría A"
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                className="neu-input"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Línea / Categoría
               </label>
               <input
@@ -635,80 +657,80 @@ export const Inventory: React.FC = () => {
                 value={formData.collection}
                 onChange={(e) => setFormData({ ...formData, collection: e.target.value })}
                 placeholder="Ej. Línea Signature / Servicios"
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                className="neu-input"
               />
             </div>
 
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Especificaciones / Atributos
               </label>
               <input
                 type="text"
                 value={formData.materials}
                 onChange={(e) => setFormData({ ...formData, materials: e.target.value })}
-                placeholder="Ej. Formato, materiales o descripción corta..."
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                placeholder="Ej. Formato, materiales o especificaciones..."
+                className="neu-input"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 font-mono">
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
-                Precio Venta (COP) *
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1 font-sans">
+                Precio Venta *
               </label>
               <input
                 type="number"
                 required
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                className="neu-input"
               />
             </div>
 
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1 font-sans">
                 Costo Base
               </label>
               <input
                 type="number"
                 value={formData.cost}
                 onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                className="neu-input"
               />
             </div>
 
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
-                Inventario
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1 font-sans">
+                Stock
               </label>
               <input
                 type="number"
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                className="neu-input"
               />
             </div>
 
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
-                Mínimo Alerta
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1 font-sans">
+                Mín. Alerta
               </label>
               <input
                 type="number"
                 value={formData.minStock}
                 onChange={(e) => setFormData({ ...formData, minStock: e.target.value })}
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                className="neu-input"
               />
             </div>
           </div>
 
-          <div className="pt-4 border-t border-ink-100 flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-neu-surfaceDark/50 flex items-center justify-end gap-3">
             <Button type="button" variant="secondary" onClick={() => setIsModalOpen(false)}>
               Cancelar
             </Button>
-            <Button type="submit" variant="primary">
+            <Button type="submit" variant="accent">
               {editingProduct ? "Actualizar Ítem" : "Guardar en Catálogo"}
             </Button>
           </div>

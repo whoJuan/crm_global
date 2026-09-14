@@ -44,33 +44,31 @@ export const Modal: React.FC<ModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-950/60 backdrop-blur-none animate-in fade-in duration-200">
-      <div
-        className="fixed inset-0"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neu-dark/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
       <div
-        className={`relative w-full ${maxWidthStyles[maxWidth]} bg-surface border border-ink-200 shadow-elevated z-10 max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200`}
+        className={`relative w-full ${maxWidthStyles[maxWidth]} bg-neu-surface rounded-3xl shadow-neu-raised-lg border border-white/60 z-10 max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200`}
       >
-        {/* Header Editorial */}
-        <div className="flex items-start justify-between p-6 pb-4 border-b border-ink-100 bg-surface">
+        {/* Cabecera Neumórfica */}
+        <div className="flex items-start justify-between p-6 pb-4 border-b border-neu-surfaceDark/50 bg-neu-surface">
           <div>
-            <span className="editorial-tag text-brass-600">Robledo Atelier Studio</span>
-            <h2 className="font-serif text-2xl font-normal text-ink-950 mt-1">{title}</h2>
-            {subtitle && <p className="text-xs text-ink-500 font-light mt-0.5">{subtitle}</p>}
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent bg-neu-surface px-2.5 py-0.5 rounded-full shadow-neu-inset-sm border border-white/20">
+              Módulo de Operaciones
+            </span>
+            <h2 className="font-display text-2xl font-bold text-neu-text-dark mt-2">{title}</h2>
+            {subtitle && <p className="text-xs text-neu-text-sub mt-0.5">{subtitle}</p>}
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-ink-400 hover:text-ink-950 hover:bg-canvas-alt transition-colors"
+            className="w-9 h-9 rounded-full bg-neu-surface shadow-neu-raised-xs flex items-center justify-center text-neu-text-sub hover:text-neu-danger hover:shadow-neu-inset transition-all duration-200 border border-white/40"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Contenido con scroll discreto */}
-        <div className="p-6 overflow-y-auto scrollbar-editorial">{children}</div>
+        {/* Contenido con scroll neumórfico */}
+        <div className="p-6 overflow-y-auto scrollbar-neu flex-1">{children}</div>
       </div>
     </div>
   );

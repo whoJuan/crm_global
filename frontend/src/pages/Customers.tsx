@@ -10,6 +10,8 @@ import {
   MessageSquareShare,
   Eye,
   ShieldCheck,
+  Phone,
+  Mail,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Button from "../components/ui/Button";
@@ -68,7 +70,7 @@ const MOCK_CUSTOMERS: Customer[] = [
 export const Customers: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>(MOCK_CUSTOMERS);
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 350); // Consulta 1 a 1
+  const debouncedSearch = useDebounce(search, 350);
   const [filterType, setFilterType] = useState("TODOS");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -145,123 +147,138 @@ export const Customers: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Cabecera Editorial */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-ink-100 gap-6">
+      {/* Cabecera Neumórfica */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between pb-6 gap-6">
         <div>
-          <span className="editorial-tag text-brass-600">Directorio de Clientela & Cuentas</span>
-          <h1 className="font-serif text-4xl font-normal text-ink-950 mt-1">
-            Directorio <span className="italic font-light text-brass-600">&</span> Dossier de Clientes
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neu-accent bg-neu-surface px-3 py-1 rounded-full shadow-neu-inset-sm border border-white/20">
+              Directorio & Cuentas
+            </span>
+            <span className="w-2 h-2 rounded-full bg-neu-success shadow-neu-glow-success animate-pulse" />
+          </div>
+          <h1 className="font-display text-3xl font-extrabold text-neu-text-dark">
+            Directorio <span className="text-neu-accent">&</span> Expedientes
           </h1>
-          <p className="text-sm text-ink-600 mt-2 font-light max-w-xl">
-            Gestión de clientes particulares, cuentas B2B corporativas y contactos comerciales.
+          <p className="text-xs text-neu-text-sub mt-1">
+            Gestión de clientes particulares, cuentas corporativas y contactos comerciales.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="primary" size="md" onClick={() => setIsModalOpen(true)}>
-            <Plus className="w-3.5 h-3.5 mr-2" /> Nuevo Cliente
+          <Button variant="accent" size="md" onClick={() => setIsModalOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" /> Nuevo Cliente
           </Button>
         </div>
       </header>
 
-      {/* Barra de Filtros & Búsqueda con Debounce 1 a 1 */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-ink-100">
+      {/* Barra de Filtros & Búsqueda */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-3xl bg-neu-surface shadow-neu-raised-sm border border-white/60">
         <div className="flex items-center gap-2">
-          {["TODOS", "VIP", "B2B"].map((ft) => (
+          {[
+            { id: "TODOS", label: "Todos los Clientes" },
+            { id: "VIP", label: "Clientes VIP" },
+            { id: "B2B", label: "Cuentas B2B" },
+          ].map((ft) => (
             <button
-              key={ft}
-              onClick={() => setFilterType(ft)}
-              className={`px-3 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${
-                filterType === ft
-                  ? "bg-ink-950 text-canvas font-semibold"
-                  : "bg-surface border border-ink-100 text-ink-600 hover:border-ink-400"
+              key={ft.id}
+              onClick={() => setFilterType(ft.id)}
+              className={`px-4 py-2 text-xs font-semibold rounded-2xl whitespace-nowrap transition-all duration-200 border ${
+                filterType === ft.id
+                  ? "bg-neu-surface shadow-neu-inset border-white/20 text-neu-accent font-bold"
+                  : "bg-neu-surface shadow-neu-raised-xs border-white/60 text-neu-text-sub hover:text-neu-text-dark hover:shadow-neu-raised-sm"
               }`}
             >
-              {ft === "TODOS" ? "Todos los Clientes" : ft === "VIP" ? "Clientes VIP" : "Cuentas B2B / Empresas"}
+              {ft.label}
             </button>
           ))}
         </div>
 
-        <div className="relative w-full md:w-64">
-          <Search className="w-3.5 h-3.5 text-ink-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="relative w-full md:w-72">
+          <Search className="w-4 h-4 text-neu-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar (consulta 1 a 1)..."
-            className="w-full bg-canvas-alt border border-ink-100 pl-8 pr-3 py-1.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500 font-mono"
+            placeholder="Buscar por nombre, teléfono o email..."
+            className="neu-input-search"
           />
         </div>
       </div>
 
-      {/* Grilla de Fichas de Cliente Dossier */}
+      {/* Grilla de Fichas de Cliente Neumórficas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCustomers.map((cust) => (
           <article
             key={cust.id}
-            className="editorial-card p-6 flex flex-col justify-between hover:border-brass-400 transition-colors shadow-sm"
+            className="neu-card p-6 flex flex-col justify-between hover:shadow-neu-raised-lg hover:-translate-y-1 transition-all duration-300"
           >
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-2">
                     {cust.isVip && (
-                      <Badge variant="brass" size="sm">
-                        <ShieldCheck className="w-2.5 h-2.5 mr-1 inline" /> VIP
-                      </Badge>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-neu-warning bg-neu-surface px-2.5 py-0.5 rounded-full shadow-neu-inset-sm border border-white/20 flex items-center gap-1">
+                        <ShieldCheck className="w-3 h-3 text-neu-warning" /> VIP
+                      </span>
                     )}
-                    <Badge variant="default" size="sm">
+                    <span className="text-[10px] font-semibold text-neu-text-sub bg-neu-surface px-2.5 py-0.5 rounded-full shadow-neu-raised-xs border border-white/60">
                       {cust.clientType === "PARTICULAR" ? "Particular" : "Cuenta B2B"}
-                    </Badge>
+                    </span>
                   </div>
-                  <h3 className="font-serif text-xl font-medium text-ink-950">{cust.name}</h3>
+                  <h3 className="font-display text-lg font-bold text-neu-text-dark">{cust.name}</h3>
                 </div>
-                <span className="text-[10px] font-mono text-ink-400 bg-canvas-alt px-2 py-0.5 border border-ink-100">
+                <span className="text-[10px] font-mono font-bold text-neu-accent bg-neu-surface px-3 py-1 rounded-full shadow-neu-inset-sm border border-white/20">
                   {cust._count?.orders || 0} Pedidos
                 </span>
               </div>
 
               {cust.notes && (
-                <p className="text-xs text-ink-600 italic bg-canvas-alt/70 p-2.5 border-l-2 border-brass-500 font-light">
+                <div className="p-3 rounded-2xl bg-neu-surface shadow-neu-inset border border-white/20 text-xs text-neu-text-sub italic">
                   "{cust.notes}"
-                </p>
+                </div>
               )}
 
-              <div className="space-y-1.5 text-xs font-sans text-ink-600">
-                <p className="flex items-center gap-2">
-                  <PhoneCall className="w-3.5 h-3.5 text-ink-400" />
+              <div className="space-y-2 text-xs text-neu-text-sub">
+                <p className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-neu-surface shadow-neu-inset-sm flex items-center justify-center text-neu-accent">
+                    <Phone className="w-3.5 h-3.5" />
+                  </div>
                   <span className="font-mono">{cust.phone}</span>
                 </p>
                 {cust.email && (
-                  <p className="flex items-center gap-2">
-                    <MailCheck className="w-3.5 h-3.5 text-ink-400" />
+                  <p className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-neu-surface shadow-neu-inset-sm flex items-center justify-center text-neu-accent">
+                      <Mail className="w-3.5 h-3.5" />
+                    </div>
                     <span className="font-mono truncate">{cust.email}</span>
                   </p>
                 )}
                 {cust.city && (
-                  <p className="flex items-center gap-2 text-[11px] text-ink-500">
-                    <MapPin className="w-3.5 h-3.5 text-ink-400" />
-                    {cust.city}
+                  <p className="flex items-center gap-2.5 text-[11px] text-neu-text-muted">
+                    <div className="w-7 h-7 rounded-lg bg-neu-surface shadow-neu-inset-sm flex items-center justify-center text-neu-text-muted">
+                      <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                    <span>{cust.city}</span>
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="pt-4 border-t border-ink-100 mt-6 flex items-center justify-between">
+            <div className="pt-4 border-t border-neu-surfaceDark/50 mt-6 flex items-center justify-between">
               <Link
                 to={`/customers/${cust.id}`}
-                className="text-[11px] font-semibold text-brass-600 hover:text-ink-950 uppercase tracking-wider flex items-center gap-1"
+                className="px-4 py-2 rounded-2xl bg-neu-surface shadow-neu-raised-xs border border-white/60 text-xs font-bold text-neu-accent hover:shadow-neu-inset flex items-center gap-1.5 transition-all"
               >
-                <Eye className="w-3.5 h-3.5" /> Ver Dossier
+                <Eye className="w-3.5 h-3.5" /> Expediente
               </Link>
 
               <a
                 href={`https://wa.me/${cust.phone.replace(/[^0-9]/g, "")}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1 bg-sage-50 text-sage-700 hover:bg-sage-100 border border-sage-200 text-xs font-mono"
+                className="px-4 py-2 rounded-2xl bg-neu-surface shadow-neu-raised-xs border border-white/60 text-xs font-bold text-neu-success hover:shadow-neu-inset flex items-center gap-1.5 transition-all"
               >
-                <MessageSquareShare className="w-3.5 h-3.5" /> WhatsApp
+                <MessageSquareShare className="w-3.5 h-3.5 text-neu-success" /> WhatsApp
               </a>
             </div>
           </article>
@@ -275,10 +292,10 @@ export const Customers: React.FC = () => {
         title="Nuevo Perfil de Cliente"
         subtitle="Registra información de contacto y preferencias"
       >
-        <form onSubmit={handleCreateCustomer} className="space-y-4 text-xs font-sans">
+        <form onSubmit={handleCreateCustomer} className="space-y-4 text-xs">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Nombre Completo / Razón Social *
               </label>
               <input
@@ -286,33 +303,32 @@ export const Customers: React.FC = () => {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Ej. Carolina Santamaría / Empresa SAS"
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                placeholder="Ej. Carolina Santamaría / Estudio SAS"
+                className="neu-input"
               />
             </div>
 
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Tipo de Cuenta
               </label>
               <select
                 value={formData.clientType}
-                onChange={(e) =>
-                  setFormData({ ...formData, clientType: e.target.value as any })
-                }
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                onChange={(e) => setFormData({ ...formData, clientType: e.target.value as any })}
+                className="neu-input"
               >
-                <option value="PARTICULAR">Cliente Particular</option>
-                <option value="ESTUDIO_ARQUITECTURA">Cuenta Comercial / B2B</option>
-                <option value="HOTEL_RESTAURANTE">Cuenta Corporativa / Institucional</option>
+                <option value="PARTICULAR">Particular</option>
+                <option value="ESTUDIO_ARQUITECTURA">Estudio de Arquitectura / Diseño</option>
+                <option value="HOTEL_RESTAURANTE">Hotel / Restaurante</option>
+                <option value="CORPORATIVO">Empresa / Corporativo</option>
               </select>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
-                Teléfono / WhatsApp *
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
+                Teléfono Celular *
               </label>
               <input
                 type="text"
@@ -320,84 +336,95 @@ export const Customers: React.FC = () => {
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="+57 300 123 4567"
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500 font-mono"
+                className="neu-input font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Correo Electrónico
               </label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="cliente@dominio.com"
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                placeholder="cliente@empresa.com"
+                className="neu-input font-mono"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
+                Cédula o NIT
+              </label>
+              <input
+                type="text"
+                value={formData.documentId}
+                onChange={(e) => setFormData({ ...formData, documentId: e.target.value })}
+                className="neu-input font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Ciudad
               </label>
               <input
                 type="text"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                placeholder="Bogotá, Medellín, Pereira..."
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                placeholder="Bogotá, Medellín..."
+                className="neu-input"
               />
             </div>
 
             <div>
-              <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
+              <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
                 Dirección
               </label>
               <input
                 type="text"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="Calle 85 #11-53..."
-                className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+                className="neu-input"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-ink-700 font-semibold uppercase tracking-wider text-[10px] mb-1">
-              Notas & Preferencias Comerciales
+            <label className="block text-neu-text-dark font-bold uppercase tracking-wider text-[10px] mb-1.5 pl-1">
+              Notas & Preferencias
             </label>
             <textarea
-              rows={3}
+              rows={2}
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="Ej. Requerimientos de atención, condiciones comerciales..."
-              className="w-full bg-canvas-alt border border-ink-200 p-2.5 text-xs text-ink-900 focus:outline-none focus:border-brass-500"
+              placeholder="Notas comerciales de interés..."
+              className="neu-input"
             />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="p-3 rounded-2xl bg-neu-surface shadow-neu-inset border border-white/20 flex items-center gap-3">
             <input
               type="checkbox"
               id="isVip"
               checked={formData.isVip}
               onChange={(e) => setFormData({ ...formData, isVip: e.target.checked })}
-              className="rounded-none border-ink-300 text-brass-600 focus:ring-brass-500"
+              className="w-4 h-4 rounded text-neu-accent accent-neu-accent cursor-pointer"
             />
-            <label htmlFor="isVip" className="text-xs text-ink-800 font-medium">
-              Marcar como Cliente VIP / Cuenta Clave
+            <label htmlFor="isVip" className="text-xs font-bold text-neu-text-dark cursor-pointer">
+              Marcar como Cliente VIP (Tratamiento preferencial)
             </label>
           </div>
 
-          <div className="pt-4 border-t border-ink-100 flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-neu-surfaceDark/50 flex items-center justify-end gap-3">
             <Button type="button" variant="secondary" onClick={() => setIsModalOpen(false)}>
               Cancelar
             </Button>
-            <Button type="submit" variant="primary">
-              Guardar Cliente
+            <Button type="submit" variant="accent">
+              Registrar Cliente
             </Button>
           </div>
         </form>

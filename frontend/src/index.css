@@ -6,65 +6,88 @@
   html {
     @apply antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum" 1;
+    background-color: #e8edf5;
   }
 
   body {
-    @apply bg-canvas text-ink-900 font-sans min-h-screen transition-colors duration-300;
+    @apply bg-neu-base text-neu-text-main font-sans min-h-screen;
+    background-color: #e8edf5;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif tracking-tight text-ink-950;
+    @apply font-display tracking-tight text-neu-text-dark font-bold;
   }
 
-  /* Focus visible de lujo en latón */
+  /* Focus visible suave con acento neumórfico */
   :focus-visible {
-    outline: 2px solid theme("colors.brass.500");
+    outline: 2px solid theme("colors.neu.accent.DEFAULT");
     outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* Separadores finos tipo prensa editorial */
-  .rule-hairline {
-    @apply border-t border-ink-100 dark:border-ink-800;
+  /* Tarjeta Neumórfica Estándar (Relieve exterior suave) */
+  .neu-card {
+    @apply bg-neu-surface rounded-3xl shadow-neu-raised border border-white/40 transition-all duration-300;
   }
 
-  .rule-brass {
-    @apply border-t border-brass-300/40;
+  .neu-card-sm {
+    @apply bg-neu-surface rounded-2xl shadow-neu-raised-sm border border-white/40 transition-all duration-300;
   }
 
-  /* Rótulo de sección estilo revista */
-  .editorial-tag {
-    @apply font-sans text-[10px] uppercase font-bold tracking-editorial text-ink-400;
+  .neu-card-interactive {
+    @apply bg-neu-surface rounded-3xl shadow-neu-raised border border-white/40 transition-all duration-300 hover:shadow-neu-raised-lg hover:-translate-y-0.5;
   }
 
-  /* Tarjeta editorial estructurada sin glassmorfismo */
-  .editorial-card {
-    @apply bg-surface border border-ink-100 rounded-none shadow-card transition-all duration-300;
+  /* Tarjeta Hundida / Inset (Para contenedores o paneles profundos) */
+  .neu-card-inset {
+    @apply bg-neu-surface rounded-3xl shadow-neu-inset border border-white/20;
   }
 
-  /* Botones con remates editoriales */
-  .btn-editorial-primary {
-    @apply inline-flex items-center justify-center px-5 py-2.5 bg-ink-950 text-canvas text-xs font-semibold tracking-wider uppercase transition-all duration-200 hover:bg-brass-600 hover:text-white active:scale-[0.99] disabled:opacity-50;
+  /* Campos de texto / Inputs Neumórficos Hundidos */
+  .neu-input {
+    @apply w-full bg-neu-surface rounded-2xl shadow-neu-inset text-xs text-neu-text-main placeholder:text-neu-text-muted px-4 py-3 border border-white/20 focus:outline-none focus:ring-2 focus:ring-neu-accent/40 transition-all duration-200;
   }
 
-  .btn-editorial-secondary {
-    @apply inline-flex items-center justify-center px-4 py-2 bg-surface text-ink-900 text-xs font-semibold tracking-wider uppercase border border-ink-200 hover:border-ink-900 hover:bg-canvas-alt transition-all duration-200;
+  .neu-input-search {
+    @apply w-full bg-neu-surface rounded-full shadow-neu-inset text-xs text-neu-text-main placeholder:text-neu-text-muted pl-10 pr-4 py-2.5 border border-white/20 focus:outline-none focus:ring-2 focus:ring-neu-accent/40 transition-all duration-200;
   }
 
-  .btn-editorial-brass {
-    @apply inline-flex items-center justify-center px-4 py-2 bg-brass-500 text-white text-xs font-semibold tracking-wider uppercase hover:bg-brass-600 transition-all duration-200 shadow-sm;
+  /* Botones Neumórficos */
+  .neu-btn {
+    @apply inline-flex items-center justify-center font-semibold text-xs rounded-2xl shadow-neu-raised-sm bg-neu-surface text-neu-text-main border border-white/50 transition-all duration-200 hover:shadow-neu-raised active:shadow-neu-pressed active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
   }
 
-  /* Scrollbar discreto */
-  .scrollbar-editorial::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+  .neu-btn-primary {
+    @apply inline-flex items-center justify-center font-semibold text-xs rounded-2xl shadow-neu-raised-sm bg-neu-accent text-white transition-all duration-200 hover:bg-neu-accent-hover hover:shadow-neu-glow-accent active:scale-[0.98] disabled:opacity-50;
   }
-  .scrollbar-editorial::-webkit-scrollbar-thumb {
-    @apply bg-ink-200 hover:bg-ink-400 rounded-none;
+
+  .neu-btn-circle {
+    @apply w-10 h-10 rounded-full flex items-center justify-center bg-neu-surface shadow-neu-raised-sm border border-white/50 text-neu-text-main hover:text-neu-accent hover:shadow-neu-raised active:shadow-neu-pressed active:scale-95 transition-all duration-200;
   }
-  .scrollbar-editorial::-webkit-scrollbar-track {
-    @apply bg-transparent;
+
+  .neu-btn-circle-active {
+    @apply w-10 h-10 rounded-full flex items-center justify-center bg-neu-surface shadow-neu-inset border border-white/20 text-neu-accent scale-95;
+  }
+
+  /* Píldoras e Interruptores Neumórficos */
+  .neu-pill {
+    @apply px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-neu-raised-xs bg-neu-surface border border-white/50 text-neu-text-main inline-flex items-center gap-2;
+  }
+
+  .neu-pill-active {
+    @apply px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-neu-inset bg-neu-surface text-neu-accent inline-flex items-center gap-2 border border-white/20;
+  }
+
+  /* Scrollbar Neumórfica */
+  .scrollbar-neu::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-neu::-webkit-scrollbar-thumb {
+    @apply bg-neu-text-muted/30 hover:bg-neu-text-muted/50 rounded-full;
+  }
+  .scrollbar-neu::-webkit-scrollbar-track {
+    @apply bg-neu-surface shadow-neu-inset rounded-full;
   }
 }
