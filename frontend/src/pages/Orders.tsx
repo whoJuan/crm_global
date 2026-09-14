@@ -94,6 +94,104 @@ const MOCK_ORDERS: Order[] = [
   },
 ];
 
+const MOCK_DEPENDENCY_CUSTOMERS: Customer[] = [
+  {
+    id: 1,
+    name: "Carolina Santamaría (Estudio Vanguardia)",
+    email: "carolina.santamaria@estudiovanguardia.com",
+    phone: "+57 300 456 7890",
+    address: "Calle 85 #11-53, PH 901",
+    city: "Bogotá",
+    documentId: "52.489.123",
+    isVip: true,
+    clientType: "ESTUDIO_ARQUITECTURA",
+    createdAt: "2026-03-12T10:00:00Z",
+  },
+  {
+    id: 2,
+    name: "Alejandro Echeverri",
+    email: "alejandro.echeverri@interiores.co",
+    phone: "+57 312 890 1234",
+    address: "Carrera 43A #1-50, Apto 1402",
+    city: "Medellín",
+    documentId: "98.765.432",
+    isVip: true,
+    clientType: "PARTICULAR",
+    createdAt: "2026-04-18T14:30:00Z",
+  },
+  {
+    id: 3,
+    name: "Mariana Restrepo",
+    email: "mariana.restrepo@empresa.com",
+    phone: "+57 315 234 5678",
+    address: "Av. Circunvalar #12-40",
+    city: "Pereira",
+    documentId: "42.112.980",
+    isVip: false,
+    clientType: "HOTEL_RESTAURANTE",
+    createdAt: "2026-05-20T09:15:00Z",
+  },
+];
+
+const MOCK_DEPENDENCY_PRODUCTS: Product[] = [
+  {
+    id: 1,
+    sku: "ART-001",
+    name: "Sillón Lounge de Diseño",
+    collection: "Línea Signature",
+    price: 3450000,
+    stock: 8,
+    minStock: 2,
+    inShowroom: true,
+    isActive: true,
+    categoryId: 1,
+    materials: "Textil Italiano & Base en Madera Maciza",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    sku: "SRV-001",
+    name: "Paquete de Consultoría & Diseño Integral",
+    collection: "Servicios Profesionales",
+    price: 4500000,
+    stock: 99,
+    minStock: 5,
+    inShowroom: true,
+    isActive: true,
+    categoryId: 2,
+    materials: "Servicio Profesional Llave en Mano",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 3,
+    sku: "ART-002",
+    name: "Mesa Monolítica de Centro",
+    collection: "Línea Minimalista",
+    price: 2890000,
+    stock: 3,
+    minStock: 2,
+    inShowroom: true,
+    isActive: true,
+    categoryId: 1,
+    materials: "Piedra Natural & Base en Nogal",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 4,
+    sku: "ART-003",
+    name: "Lámpara de Pie Escultórica",
+    collection: "Iluminación de Acento",
+    price: 1350000,
+    stock: 5,
+    minStock: 2,
+    inShowroom: true,
+    isActive: true,
+    categoryId: 3,
+    materials: "Latón Cepillado & Vidrio Soplado",
+    createdAt: new Date().toISOString(),
+  },
+];
+
 export const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
   const [search, setSearch] = useState("");
@@ -101,9 +199,9 @@ export const Orders: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState("TODOS");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Form state
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
+  // Form state con datos mock listos para uso offline
+  const [customers, setCustomers] = useState<Customer[]>(MOCK_DEPENDENCY_CUSTOMERS);
+  const [products, setProducts] = useState<Product[]>(MOCK_DEPENDENCY_PRODUCTS);
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
   const [orderItems, setOrderItems] = useState<
     { productId: number; quantity: number; unitPrice: number; finishNotes: string }[]
@@ -130,10 +228,10 @@ export const Orders: React.FC = () => {
         api.get("/customers"),
         api.get("/products"),
       ]);
-      if (custRes.data?.data) setCustomers(custRes.data.data);
-      if (prodRes.data?.data) setProducts(prodRes.data.data);
+      if (custRes.data?.data && custRes.data.data.length > 0) setCustomers(custRes.data.data);
+      if (prodRes.data?.data && prodRes.data.data.length > 0) setProducts(prodRes.data.data);
     } catch {
-      // Fallback
+      // Fallback a mock data
     }
   };
 
