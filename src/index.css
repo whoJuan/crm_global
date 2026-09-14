@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum" 1;
+    background-color: #e8edf5;
+  }
+
+  body {
+    @apply bg-neu-base text-neu-text-main font-sans min-h-screen;
+    background-color: #e8edf5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-neu-text-dark font-bold;
+  }
+
+  /* Focus visible suave con acento neumórfico */
+  :focus-visible {
+    outline: 2px solid theme("colors.neu.accent.DEFAULT");
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Tarjeta Neumórfica Estándar (Relieve exterior suave) */
+  .neu-card {
+    @apply bg-neu-surface rounded-3xl shadow-neu-raised border border-white/40 transition-all duration-300;
+  }
+
+  .neu-card-sm {
+    @apply bg-neu-surface rounded-2xl shadow-neu-raised-sm border border-white/40 transition-all duration-300;
+  }
+
+  .neu-card-interactive {
+    @apply bg-neu-surface rounded-3xl shadow-neu-raised border border-white/40 transition-all duration-300 hover:shadow-neu-raised-lg hover:-translate-y-0.5;
+  }
+
+  /* Tarjeta Hundida / Inset (Para contenedores o paneles profundos) */
+  .neu-card-inset {
+    @apply bg-neu-surface rounded-3xl shadow-neu-inset border border-white/20;
+  }
+
+  /* Campos de texto / Inputs Neumórficos Hundidos */
+  .neu-input {
+    @apply w-full bg-neu-surface rounded-2xl shadow-neu-inset text-xs text-neu-text-main placeholder:text-neu-text-muted px-4 py-3 border border-white/20 focus:outline-none focus:ring-2 focus:ring-neu-accent/40 transition-all duration-200;
+  }
+
+  .neu-input-search {
+    @apply w-full bg-neu-surface rounded-full shadow-neu-inset text-xs text-neu-text-main placeholder:text-neu-text-muted pl-10 pr-4 py-2.5 border border-white/20 focus:outline-none focus:ring-2 focus:ring-neu-accent/40 transition-all duration-200;
+  }
+
+  /* Botones Neumórficos */
+  .neu-btn {
+    @apply inline-flex items-center justify-center font-semibold text-xs rounded-2xl shadow-neu-raised-sm bg-neu-surface text-neu-text-main border border-white/50 transition-all duration-200 hover:shadow-neu-raised active:shadow-neu-pressed active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .neu-btn-primary {
+    @apply inline-flex items-center justify-center font-semibold text-xs rounded-2xl shadow-neu-raised-sm bg-neu-accent text-white transition-all duration-200 hover:bg-neu-accent-hover hover:shadow-neu-glow-accent active:scale-[0.98] disabled:opacity-50;
+  }
+
+  .neu-btn-circle {
+    @apply w-10 h-10 rounded-full flex items-center justify-center bg-neu-surface shadow-neu-raised-sm border border-white/50 text-neu-text-main hover:text-neu-accent hover:shadow-neu-raised active:shadow-neu-pressed active:scale-95 transition-all duration-200;
+  }
+
+  .neu-btn-circle-active {
+    @apply w-10 h-10 rounded-full flex items-center justify-center bg-neu-surface shadow-neu-inset border border-white/20 text-neu-accent scale-95;
+  }
+
+  /* Píldoras e Interruptores Neumórficos */
+  .neu-pill {
+    @apply px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-neu-raised-xs bg-neu-surface border border-white/50 text-neu-text-main inline-flex items-center gap-2;
+  }
+
+  .neu-pill-active {
+    @apply px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-neu-inset bg-neu-surface text-neu-accent inline-flex items-center gap-2 border border-white/20;
+  }
+
+  /* Scrollbar Neumórfica */
+  .scrollbar-neu::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-neu::-webkit-scrollbar-thumb {
+    @apply bg-neu-text-muted/30 hover:bg-neu-text-muted/50 rounded-full;
+  }
+  .scrollbar-neu::-webkit-scrollbar-track {
+    @apply bg-neu-surface shadow-neu-inset rounded-full;
+  }
+}
